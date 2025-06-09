@@ -14,7 +14,7 @@ export async function GET() {
         await connect();
         const session = await getServerSession(authOptions)
         if (!session || session.user?.role !== "branchadmin") {
-            return new Response("Unauthorized", { status: 401 });
+            return NextResponse.json({error: "Unauthorized"}, { status: 401 });
         }
 
         const branchAdmincenterId = session.user.centerId;

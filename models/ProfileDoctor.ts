@@ -4,9 +4,10 @@ import AllCare from "./AllCare";
 
 
 
-
+// here we will set the empId as centerId-counter couter will increase(static)
 export interface IDoctor extends Document {
   user: Types.ObjectId;
+  empId: String;
   fullName: string;
   mobileNo: number;
   gender: string;
@@ -20,6 +21,7 @@ export interface IDoctor extends Document {
 
 const doctorschema = new Schema<IDoctor> ({
   user: {type: mongoose.Schema.ObjectId, ref: 'User', required: true},
+  empId: {type:String, required: true},
   fullName: {type: String, required: true},
   mobileNo: {type: Number, required: true},
   gender: {type: String, enum: ['male', 'female', 'trans'], required: true},

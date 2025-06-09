@@ -22,7 +22,7 @@ export interface IPatient extends Document {
 
 const patientschema = new Schema <IPatient> ({
   user: {type: mongoose.Schema.ObjectId, ref: 'User', required: true},
-  fullName: String,
+  fullName: {type: String,required: true},
   aadharNo: Number,
   gender: {type: String, enum: ['male', 'female', 'trans']},
   dateOfBirth: Date,
