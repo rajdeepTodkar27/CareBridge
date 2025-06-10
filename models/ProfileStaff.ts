@@ -4,12 +4,17 @@ import AllCare from "./AllCare";
 
 export interface IProfileStaff extends Document {
   user: Types.ObjectId;
-  hospital: Types.ObjectId
+  hospital: Types.ObjectId;
+  administrativeTitle: string;
+  qualification: string;
+  institute: string
 }
 
 const profilestaffschema = new Schema <IProfileStaff> ({
   user: {type: mongoose.Schema.ObjectId, ref: 'PatientsProfile', required: true},
-  hospital: {type:mongoose.Schema.ObjectId, ref:'AllCare' }
+  administrativeTitle: {type: String, required: true},
+  qualification: {type: String,required : true},
+  institute: {type: String, required: true}
 })
 
 export default models.ProfileStaff || model<IProfileStaff> ("ProfileStaff", profilestaffschema)

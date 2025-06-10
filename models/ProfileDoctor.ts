@@ -13,7 +13,6 @@ export interface IDoctor extends Document {
   gender: string;
   medicalSpeciality: string;
   experience: number;
-  hospital: Types.ObjectId;
   administrativeTitle: string;
   licenseNo: string;
   licenseAuthority: string
@@ -27,7 +26,6 @@ const doctorschema = new Schema<IDoctor> ({
   gender: {type: String, enum: ['male', 'female', 'trans'], required: true},
   medicalSpeciality: {type: String, required: true},
   experience: {type: Number, required: true},
-  hospital: {type: mongoose.Schema.ObjectId, ref: 'AllCare', required: true},
   administrativeTitle: {type: String, required: true},
   licenseNo: {type: String, required: true},
   licenseAuthority: {type: String, required: true}
