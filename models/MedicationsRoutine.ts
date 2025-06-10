@@ -17,7 +17,7 @@ interface Medicine {
 }
 
 const medroutineschema = new Schema<IMedRoutine>({
-  patient: {type: mongoose.Schema.ObjectId, ref: 'PatientsProfile', required: true},
+  patient: {type: mongoose.Schema.ObjectId, ref: 'User', required: true},
   Medication: [{ medicineName: { type: String},
     quantity: { type: String} }],
   Medtime:  String,

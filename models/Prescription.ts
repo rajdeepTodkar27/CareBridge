@@ -1,5 +1,5 @@
 import mongoose,{Document,Schema,models,model, Types} from "mongoose";
-import PatientsProfile from "./PatientsProfile";
+
 
 export interface IPrescription extends Document {
   patient: Types.ObjectId;
@@ -15,9 +15,9 @@ interface Medicine {
 }
 
 const prescriptionschema = new Schema <IPrescription> ({
-  patient: {type: mongoose.Schema.ObjectId, ref: 'PatientsProfile'},
+  patient: {type: mongoose.Schema.ObjectId, ref: 'User', required: true},
   medicine: [{name:{ type: String},quantity:{ type: String},dosage:{ type: String} }],
-  date: Date,
+  date: {type:Date,required: true},
   isTaken: Boolean
 })
 

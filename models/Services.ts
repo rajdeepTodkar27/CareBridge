@@ -11,13 +11,13 @@ export interface IServices extends Document {
 }
 
 const servicesschema = new Schema <IServices> ({
-  serviceName: String,
-  category: String,
-  department: String,
+  serviceName:  {type: String, default: ""},
+  category:  {type: String, default: ""},
+  department:  {type: String, default: ""},
   baseCost: Number,
   unit: Number,
-  description: String,
-  isActive: Boolean
+  description:  {type: String, default: ""},
+  isActive: {type: Boolean, default: true}
 })
 
 export default models.Services || model<IServices> ("Services", servicesschema)

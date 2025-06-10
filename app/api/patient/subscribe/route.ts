@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
       paymentMethod,
       paymentId,
       hospital: null,
+      service: null
     });
 
     await payment.save();

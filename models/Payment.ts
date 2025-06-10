@@ -14,13 +14,13 @@ export interface IPayment extends Document {
 }
 
 const paymentschema = new Schema <IPayment> ({
-  patient: {type: mongoose.Schema.ObjectId, ref: 'PatientsProfile'},
+  patient: {type: mongoose.Schema.ObjectId, ref: 'User'},
   date:  {type: Date, required: true},
   hospital: {type: mongoose.Schema.ObjectId, ref: 'AllCare'},
   service: {type: mongoose.Schema.ObjectId, ref: 'ServiceUsage'},
   subscription : {type: mongoose.Schema.ObjectId, ref: 'Subscription'},
   paymentMethod: {type: String, enum: ['upi', 'card', 'cash', 'netbanking']},
-  paymentId: String
+  paymentId: {type: String,default:""}
 })
 
 export default models.Payment || model<IPayment> ("Payment", paymentschema)

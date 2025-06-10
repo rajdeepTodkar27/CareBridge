@@ -19,14 +19,14 @@ interface Surgery {
 }
 
 const medicalhistoryschema = new Schema<IMedHistory>({
-  patient: {type: mongoose.Schema.ObjectId, ref: 'PatientsProfile', required: true},
-  pastIllness: String,
-  surgeries: [{  nameOfSurgery:{ type: String},
-    dateOfSurgery: { type: String},
-    reportFile: { type: String} }],
-  currentMedications: String,
-  allergies: String,
-  geneticDisorders: String,
+  patient: {type: mongoose.Schema.ObjectId, ref: 'User', required: true},
+  pastIllness: {type: String, default: ""},
+  surgeries: [{  nameOfSurgery:{ type: String,default: ""},
+    dateOfSurgery: { type: String , default: ""},
+    reportFile: { type: String , default: ""} }],
+  currentMedications:  {type: String, default: ""},
+  allergies:  {type: String, default: ""},
+  geneticDisorders:  {type: String, default: ""},
   pastMedicalTests: [String],
   pastPrescriptions: [{type: mongoose.Schema.ObjectId, ref: 'Prescription'}]
 })

@@ -14,11 +14,11 @@ export interface IServiceUsage extends Document {
 const serviceusageschema = new Schema <IServiceUsage> ({
   service: {type: mongoose.Schema.ObjectId, ref: 'Services', required: true},
   unit: {type: Number, required: true, default: 1},
-  totalCost: Number,
-  note: String,
+  totalCost: {type: Number,required: true},
+  note: {type: String, default: ""},
   dateProvided:  Date,
   isProvided: {type: String, enum: ['pending', 'provided']},
-  isPaid: Boolean
+  isPaid: {type: Boolean, default: false}
 })
 
 export default models.ServiceUsage || model<IServiceUsage> ("ServiceUsage", serviceusageschema )

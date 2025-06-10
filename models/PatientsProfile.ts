@@ -6,33 +6,29 @@ import Payment from "./Payment"
 
 
 export interface IPatient extends Document {
-  user: Types.ObjectId;
+  patient: Types.ObjectId;
   fullName: string;
   aadharNo: number;
   gender: string;
   dateOfBirth: Date;
   mobileNo: number;
   emergencyContact: number;
-  medicalHistory:  Types.ObjectId;
   vitals:  Types.ObjectId;
   occupation: string;
   lifestyle: string;
-  paymentHistory:  Types.ObjectId
 }
 
 const patientschema = new Schema <IPatient> ({
-  user: {type: mongoose.Schema.ObjectId, ref: 'User', required: true},
+  patient: {type: mongoose.Schema.ObjectId, ref: 'User', required: true},
   fullName: {type: String,required: true},
-  aadharNo: Number,
+  aadharNo: {type: Number,required: true},
   gender: {type: String, enum: ['male', 'female', 'trans']},
-  dateOfBirth: Date,
-  mobileNo: Number,
-  emergencyContact: Number,
-  medicalHistory: {type: mongoose.Schema.ObjectId, ref: 'MedicalHistory'},
+  dateOfBirth: {type: Date,required: true},
+  mobileNo: {type: Number,required: true},
+  emergencyContact: {type: Number,required: true},
   vitals: {type: mongoose.Schema.ObjectId, ref: 'Vitals'},
-  occupation: String,
-  lifestyle: String,
-  paymentHistory: {type: mongoose.Schema.ObjectId, ref: 'Payment'}
+  occupation: {type: String, default: ""},
+  lifestyle: {type: String, default: ""},
 })
 
 export default models.ProfilePatient || model<IPatient>("ProfilePatient", patientschema)
