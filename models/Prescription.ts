@@ -16,9 +16,9 @@ interface Medicine {
 
 const prescriptionschema = new Schema <IPrescription> ({
   patient: {type: mongoose.Schema.ObjectId, ref: 'User', required: true},
-  medicine: [{name:{ type: String},quantity:{ type: String},dosage:{ type: String} }],
+  medicine: [{medName:{ type: String},quantity:{ type: String},dosage:{ type: String} }],
   date: {type:Date,required: true},
-  isTaken: Boolean
+  isTaken: {type: Boolean, default: false}
 })
 
 export default models.Prescription || model<IPrescription> ("Prescription", prescriptionschema)

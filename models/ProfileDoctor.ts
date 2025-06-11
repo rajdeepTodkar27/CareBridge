@@ -26,7 +26,7 @@ const doctorschema = new Schema<IDoctor> ({
   gender: {type: String, enum: ['male', 'female', 'trans'], required: true},
   medicalSpeciality: {type: String, required: true},
   experience: {type: Number, required: true},
-  administrativeTitle: {type: String, required: true},
+  administrativeTitle: {type: String,default: ""},
   licenseNo: {type: String, required: true},
   licenseAuthority: {type: String, required: true}
 })

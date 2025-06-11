@@ -31,4 +31,4 @@ const patientschema = new Schema <IPatient> ({
   lifestyle: {type: String, default: ""},
 })
 
-export default models.ProfilePatient || model<IPatient>("ProfilePatient", patientschema)
+export default models.PatientsProfile || model<IPatient>("PatientsProfile", patientschema)
