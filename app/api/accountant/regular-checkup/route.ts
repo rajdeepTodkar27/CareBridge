@@ -3,7 +3,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import User from "@/models/User";
-import ProfileDoctor from "@/models/ProfileDoctor";
+import ProfileStaff from "@/models/ProfileStaff";
 import RegularCheckup from "@/models/RegularCheckup";
 
 export async function GET() {
@@ -11,24 +11,23 @@ export async function GET() {
         await connect()
         const session = await getServerSession(authOptions)
 
-        if (!session || session.user.role != "doctor") {
+        if (!session || session.user.role != "accountant") {
             return NextResponse.json({ error: "Unauthorize" }, { status: 401 })
         }
         const user = await User.findOne({ email: session.user.email })
         if (!user) {
             return NextResponse.json({ error: "User not found" }, { status: 404 })
         }
-        const profile = await ProfileDoctor.findOne({ user: user._id })
+        const profile = await ProfileStaff.findOne({ user: user._id })
 
         if (!profile) {
-            return NextResponse.json({ error: "Not found Doctors profile" }, { status: 404 })
+            return NextResponse.json({ error: "Not found Accountant profile" }, { status: 404 })
         }
-
         const regularcheckup = await RegularCheckup.find({ isDone: false })
-            .populate({ path: "appointmentRequest", match: { doctor: profile._id }, populate: { path: "patient", select: "patient fullName gender" }, select: "description scheduledTime" })
+            .populate({ path: "appointmentRequest", match: { hospitalCenterId: session.user.centerId }, populate: { path: "patient", select: "patient fullName gender" }, select: "description scheduledTime" })
             .select("appointmentRequest")
 
-            // just regular checkup gives array of null doc if match fails
+        // just regular checkup gives array of null doc if match fails
         const filteredCheckups = regularcheckup.filter(item => item.appointmentRequest !== null);
 
         if (filteredCheckups.length === 0) {
@@ -42,19 +41,18 @@ export async function GET() {
 }
 
 
-// sample responce 
-
-// {
-//       "_id": "665f3b2de6f8721f4e9e72cb",
-//       "appointmentRequest": {
-//         "_id": "665f3a99e6f8721f4e9e72c9",
-//         "description": "Follow-up for blood pressure check",
-//         "patient": {
-//           "_id": "665f3a12e6f8721f4e9e72c7",
-//           "patient": "665f390ae6f8721f4e9e72c5",
-//           "fullName": "Ravi Kumar",
-//           "gender": "male",
-//           "mobileNo": 9876543210
-//         }
-//       }
-//     }
+// sample responce
+    // {
+    //   "_id": "665febb21f9a128fd9e01234",
+    //   "appointmentRequest": {
+    //     "_id": "665feb121f9a128fd9e04567",
+    //     "description": "Follow-up for blood pressure",
+    //     "scheduledTime": "2025-06-15T09:00:00.000Z",
+    //     "patient": {
+    //       "_id": "665faa001f9a128fd9e07890",
+    //       "patient": "P2001",
+    //       "fullName": "Ramesh Mehta",
+    //       "gender": "Male"
+    //     }
+    //   }
+    // },

@@ -7,7 +7,7 @@ import { connect } from "@/dbconfig/dbconfig";
 
 // for the branchadmin centerId is branchId for the others it is a centerId
 
-// post and put info of the carecenter  admin routes are used
+// post and put info of the carecenter  admin routes are used  createstff and staffinfo of admin
 
 export async function GET() {
     try {

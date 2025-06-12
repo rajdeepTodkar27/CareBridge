@@ -3,33 +3,32 @@ import { connect } from "@/dbconfig/dbconfig";
 import { getServerSession } from "next-auth";           
 import { authOptions } from "../../auth/[...nextauth]/route";
 import User from "@/models/User";
-import { error } from "console";
-import ProfileDoctor from "@/models/ProfileDoctor";
 import HospitalAdmissions from "@/models/HospitalAdmissions";
+import ProfileStaff from "@/models/ProfileStaff";
 
 export async function GET() {
     try {
         await connect()
         const session = await getServerSession(authOptions)
 
-        if(!session || session.user.role != "doctor"){
+        if(!session || session.user.role != "accountant"){
             return NextResponse.json({error: "Unauthorize"},{status: 401})
         }
         const user = await User.findOne({email: session.user.email})
         if(!user){
             return NextResponse.json({error: "User not found"},{status: 404})
         }
-        const profile = await ProfileDoctor.findOne({user: user._id})
+        const profile = await ProfileStaff.findOne({user: user._id})
         
         if(!profile){
-            return NextResponse.json({error: "Not found Doctors profile"},{status: 404})
+            return NextResponse.json({error: "Not found Accountant profile"},{status: 404})
         }
 
-        const patients = await HospitalAdmissions.find({assignedDoctor: profile._id, isDischarged: false})
-        .populate({path: "patient",select: "patient fullName gender "})
-        .select("patient bedNo")
+        const patients = await HospitalAdmissions.find({isDischarged: false,hospitalCenterId: session.user.centerId})
+        .populate({path: "patient",select: "patient fullName gender"})
+        .select("patient")
 
-        if(patients.length===0){
+        if(patients.length ===0){
             return NextResponse.json({error: "patient not found"},{status: 404})
         }
         return NextResponse.json({message: "successfully fetched the patients data", data: patients},{status: 200})
@@ -43,17 +42,11 @@ export async function GET() {
 
 // sample responce
 //  {
-//       "_id": "665fc90f3b6d2b92fce73512",
+//       "_id": "667abcf91f9a128fd9e09876",
 //       "patient": {
-//         "_id": "665fc7d43b6d2b92fce73511",
-//         "patient": "665fc6c13b6d2b92fce73510",
-//         "fullName": "Ravi Sharma",
-//         "gender": "male",
-//         "mobileNo": 9876543210
-//       },
-//       "bedNo": "B12",
-//       "assignedNurse": {
-//         "_id": "665fc7003b6d2b92fce73514",
-//         "fullName": "Nurse Anita"
+//         "_id": "665faa001f9a128fd9e07890",
+//         "patient": "P2001",
+//         "fullName": "Ramesh Mehta",
+//         "gender": "Male"
 //       }
 //     },

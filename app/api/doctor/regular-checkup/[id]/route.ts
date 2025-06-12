@@ -8,7 +8,7 @@ import MedicalHistory from "@/models/MedicalHistory";
 // id is user._id
 
 
-// params i.e id=user._Id(patient)-regularcheckup._id
+// params i.e id=regularcheckup._id
 
 
 export async function GET({ params }: { params: { id: string } }) {
@@ -22,7 +22,7 @@ export async function GET({ params }: { params: { id: string } }) {
         path: "appointmentRequest",
         populate: {
           path: "patient",
-          select: "fullName gender lifestyle vitals",
+          select: "fullName gender lifestyle vitals mobileNo",
           populate: {
             path: "vitals",
           },
@@ -51,6 +51,7 @@ export async function GET({ params }: { params: { id: string } }) {
           gender: regularCheckup.appointmentRequest.patient.gender,
           lifestyle: regularCheckup.appointmentRequest.patient.lifestyle,
           vitals: regularCheckup.appointmentRequest.patient.vitals,
+          mobileNo: regularCheckup.appointmentRequest.patient.mobileNo,
         },
         regularCheckup: {
           followUpDate: regularCheckup.followUpDate,
