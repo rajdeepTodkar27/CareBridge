@@ -1,6 +1,7 @@
 import { NextRequest,NextResponse } from "next/server";
 import { connect } from "@/dbconfig/dbconfig";
 import Prescription from "@/models/Prescription";
+import MedicalHistory from "@/models/MedicalHistory";
 
 
 // should i do medicine routine here somewhere else?
@@ -13,13 +14,16 @@ export async function POST(req: NextRequest) {
         const todayDate = Date.now()
         const prescription = new Prescription({patient: patientUid, medicine,date: todayDate})
         await prescription.save()
+        
+        const medHis = await MedicalHistory.findOneAndUpdate({patient: patientUid},{$push: {pastPrescriptions: prescription._id}}, { upsert: true, new: true }) 
+        
         return NextResponse.json({message: "successfully saved the prescription"},{status: 201})
     } catch (error) {
         console.log(error);
         return NextResponse.json({error: "Internal server error"},{status: 500})
     }
 }
-
+   
 
 
 //sample request

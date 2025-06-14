@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         }
         let staffConst = await Counter.findOneAndUpdate({centerId:user.centerId},{$inc: {count:1}},{new: true,upsert: true})
         let role=""
-        if(user.role=="nurse"){role="NR"}else if(user.role=="staff"){role="ST"}else if(user.role=="accountant"){role="ACC"}
+        if(user.role==="nurse"){role="NR"}else if(user.role==="staff"){role="ST"}else if(user.role==="accountant"){role="ACC"}
         const empId=`${user.centerId}-${role}-${staffConst.count.toString().padStart(4, "0")}`
         const profile = new ProfileStaff({user: user._id,empId,fullName,mobileNo, gender,qualification,institute})
         await profile.save()

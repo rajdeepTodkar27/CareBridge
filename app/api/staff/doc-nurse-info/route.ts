@@ -11,7 +11,7 @@ export async function GET() {
     try {
         await connect()
         const session = await getServerSession(authOptions)
-        if (!session || session.user.role != "staff") {
+        if (!session || session.user.role !== "staff") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
         const doctors = await User.find({ centerId: session.user.centerId, role: "doctor" }).select("_id")

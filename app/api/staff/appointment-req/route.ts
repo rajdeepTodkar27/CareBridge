@@ -15,7 +15,7 @@ export async function PUT(req: NextRequest) {
         if(!appReq){
             return NextResponse.json({error: "appointment request not found"},{status: 404})
         }
-        if(requestStatus=="approved"){
+        if(requestStatus==="approved"){
             const regularCheckup =new RegularCheckup({ appointmentRequest: appReq._id, treatmentServices: []})
             await regularCheckup.save()
         }

@@ -11,7 +11,7 @@ export async function GET() {
         await connect()
         const session = await getServerSession(authOptions)
 
-        if (!session || session.user.role != "doctor") {
+        if (!session || session.user.role !== "doctor") {
             return NextResponse.json({ error: "Unauthorize" }, { status: 401 })
         }
         const user = await User.findOne({ email: session.user.email })

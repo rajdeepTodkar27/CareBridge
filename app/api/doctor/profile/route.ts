@@ -10,7 +10,7 @@ export async function GET() {
     try {
         await connect()
         const session = await getServerSession(authOptions)
-        if (!session || session.user.role != "doctor") {
+        if (!session || session.user.role !== "doctor") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
         const user = await User.findOne({ email: session.user.email })
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
         await connect()
         const {fullName,mobileNo, gender,medicalSpeciality,experience, licenseNo,licenseAuthority} =await req.json()
         const session = await getServerSession(authOptions)
-        if (!session || session.user.role != "doctor") {
+        if (!session || session.user.role !== "doctor") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
         const user = await User.findOne({ email: session.user.email })
