@@ -2,12 +2,10 @@ import { NextResponse,NextRequest } from "next/server";
 import { connect } from "@/dbconfig/dbconfig";
 import HospitalAdmissions from "@/models/HospitalAdmissions";
 import MedicalHistory from "@/models/MedicalHistory";
-import Vitals from "@/models/Vitals";
 
 
 // params id=admission._id
-// nurse can change vitals
-// here should think and update the code for adding medication routine
+
 
 export async function GET({ params }: { params: { id: string } }) {
   try {
@@ -18,11 +16,16 @@ export async function GET({ params }: { params: { id: string } }) {
     const admission = await HospitalAdmissions.findById(admissionId)
       .populate({
         path: "patient",
-        select: " fullName gender lifestyle vitals mobileNo patient",
-        populate: { path: "vitals" },
+        select: "fullName gender emergencyContact dateOfBirth aadharNo mobileNo patient",
+        populate: {
+            path: "patient",
+            select: "email"
+          },
       })
       .populate("treatmentServices")
-      .populate({path:"assignedDoctor", select: "fullName empId"})
+      .populate({ path: "assignedNurse", select: "fullName mobileNo gender empId" })
+      .populate({ path: "assignedDoctor", select: "fullName mobileNo gender medicalSpeciality empId" })
+
 
     if (!admission || !admission.patient) {
       return NextResponse.json({ error: "Data not found" }, { status: 404 });
@@ -30,18 +33,19 @@ export async function GET({ params }: { params: { id: string } }) {
 
     const patientUserId = admission.patient.patient;
 
-    const medicalHistory = await MedicalHistory.findOne({ patient: patientUserId })
-      .populate("pastPrescriptions");
+  
 
     return NextResponse.json({
       message: "Successfully fetched data",
       data: {
         patient: {
-          patientUId: patientUserId,
+          patientUId: patientUserId._id,
+          email: patientUserId.email,
           fullName: admission.patient.fullName,
           gender: admission.patient.gender,
-          lifestyle: admission.patient.lifestyle,
-          vitals: admission.patient.vitals,
+          dateOfBirth: admission.patient.dateOfBirth,
+          aadharNo: admission.patient.aadharNo,
+          emergencyContact: admission.patient.emergencyContact,
           mobileNo: admission.patient.mobileNo,
         },
         admissionDetails: {
@@ -49,29 +53,15 @@ export async function GET({ params }: { params: { id: string } }) {
           bedNo: admission.bedNo,
           isDischarged: admission.isDischarged,
           dischargeDateTime: admission.dischargeDateTime,
+          assignedNurse: admission.assignedNurse,
+          assignedDoctor: admission.assignedDoctor,
           treatmentServices: admission.treatmentServices,
         },
-        medicalHistory,
       },
     }, { status: 200 });
 
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-}
-
-
-export async function PUT(req: NextRequest) {
-  try {
-    await connect();
-    const { patient, weight,height,bmi,heartRate,bloodSugar,bloodPressure,temperature} = await req.json()
-
-    const updateVitals = await Vitals.findOneAndUpdate({patient: patient},{$set: {weight,height,bmi,heartRate,bloodSugar,bloodPressure,temperature}},{ upsert: true, new: true })
-
-    return NextResponse.json({message: "Patients vitals updated successfully",data: updateVitals},{status: 200})
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json({error: "Internal server error"},{status: 500})
   }
 }

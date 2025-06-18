@@ -16,7 +16,7 @@ export async function GET({ params }: { params: { id: string } }) {
     const admission = await HospitalAdmissions.findById(admissionId)
       .populate({
         path: "patient",
-        select: "fullName gender lifestyle vitals mobileNo",
+        select: "fullName gender lifestyle vitals mobileNo patient",
         populate: { path: "vitals" },
       })
       .populate("treatmentServices")
@@ -35,6 +35,7 @@ export async function GET({ params }: { params: { id: string } }) {
       message: "Successfully fetched data",
       data: {
         patient: {
+          patientUId: patientUserId,
           fullName: admission.patient.fullName,
           gender: admission.patient.gender,
           lifestyle: admission.patient.lifestyle,

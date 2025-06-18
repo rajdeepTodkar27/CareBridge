@@ -32,9 +32,9 @@ export async function GET() {
         const session = await  getServerSession(authOptions);
         if(!session){
             return NextResponse.json({error: "Unauthorized user"},{status: 401})
-        }
+        } 
         const centerId =  session.user.centerId
-        const appointments = await DoctorAppointmentRequest.find({hospitalCenterId: centerId})
+        const appointments = await DoctorAppointmentRequest.find({hospitalCenterId: centerId,requestStatus: {$in: ["pending","rejected"]}})
         .populate({path: "patient",select: "fullName ",populate: {path: "user", select: "email"} })
         .populate({path: "doctor",select:"fullName empId" })
         .populate({path: "subscription",select: "endingDate" })

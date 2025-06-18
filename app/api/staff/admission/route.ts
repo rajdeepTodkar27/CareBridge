@@ -40,17 +40,15 @@ export async function GET() {
             return NextResponse.json({error: "Unauthorized user"},{status: 401})
         }
         const centerId =  session.user.centerId
-        const addmission = await HospitalAdmissions.find({hospitalCenterId: centerId})
-        .populate({path: "patient"})
-        .populate({path: "assignedDoctor"})
-        .populate({path: "treatmentServices"})
-        .populate({path: "assignedNurse", populate: {path: "user", select: "email"}})
+        const addmission = await HospitalAdmissions.find({hospitalCenterId: centerId, isDischarged: false})
+        .populate({path: "patient",select: "patient fullName gender "})
+        .select("patient bedNo")
 
         if(!addmission){
             return NextResponse.json({error: "no data found"},{status: 404})
         }
         
-        return NextResponse.json({message: "successfully fetched admission data "},{status: 200})
+        return NextResponse.json({message: "successfully fetched admission data ",data: addmission},{status: 200})
 
     } catch (error) {
         console.log(error);
