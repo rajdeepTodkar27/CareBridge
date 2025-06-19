@@ -3,6 +3,8 @@ import { connect } from "@/dbconfig/dbconfig";
 import PatientsProfile from "@/models/PatientsProfile";
 import RegularCheckup from "@/models/RegularCheckup";
 import MedicalHistory from "@/models/MedicalHistory";
+import Vitals from "@/models/Vitals";
+import ServiceUsage from "@/models/ServiceUsage";
 // on profile page will see medical history, give prescription, after appointment they will do done--> in regular check update true
 // also putting the treatment services
 // id is user._id
@@ -48,6 +50,7 @@ export async function GET({ params }: { params: { id: string } }) {
       data: {
         patient: {
           patientUId: patientUserId,
+          profileId: regularCheckup.appointmentRequest.patient._id,
           fullName: regularCheckup.appointmentRequest.patient.fullName,
           gender: regularCheckup.appointmentRequest.patient.gender,
           lifestyle: regularCheckup.appointmentRequest.patient.lifestyle,
@@ -71,14 +74,86 @@ export async function GET({ params }: { params: { id: string } }) {
 }
 
 
-export async function PUT(req: NextRequest) {
-    try {
-        await connect()
-        const {userId} = await req.json()
 
-    } catch (error) {
-        console.log(error);
-        return NextResponse.json({error: "Internal server error"},{status: 500})
+export async function POST(req: NextRequest) {
+  try {
+    await connect();
 
+    const { patientUid, vitals } = await req.json();
+
+    if (!patientUid || !vitals) {
+      return NextResponse.json({ error: "Invalid request data" }, { status: 400 });
     }
+
+    const updatedVitals = await Vitals.findOneAndUpdate(
+      { patient: patientUid },
+      { ...vitals, patient: patientUid },
+      { upsert: true, new: true }
+    );
+
+    return NextResponse.json(
+      { message: "Vitals updated successfully", data: updatedVitals },
+      { status: 200 }
+    );
+
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    await connect();
+
+    const { regularCheckupId, treatmentServices } = await req.json();
+
+    if (!regularCheckupId || !Array.isArray(treatmentServices) || treatmentServices.length === 0) {
+      return NextResponse.json({ error: "Invalid request data" }, { status: 400 });
+    }
+
+    const createdServices = await Promise.all(
+      treatmentServices.map(async (service: any) => {
+        const newService = new ServiceUsage({
+          service: service.serviceId,
+          unit: service.unit,
+          totalCost: service.totalCost,
+          note: service.note || "",
+          dateProvided: new Date(service.dateProvided),
+          isProvided: service.isProvided,
+          isPaid: service.isPaid
+        });
+        await newService.save();
+        return newService._id;
+      })
+    );
+
+    const admissionUpdate = await RegularCheckup.findByIdAndUpdate(
+      regularCheckupId,
+      { $push: { treatmentServices: { $each: createdServices } } },
+      { new: true }
+    );
+
+    if (!admissionUpdate) {
+      return NextResponse.json(
+        { error: "Active hospital admission not found for this patient" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Treatment services added successfully" },
+      { status: 200 }
+    );
+
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

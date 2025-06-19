@@ -1,7 +1,7 @@
 import { NextRequest,NextResponse } from "next/server";
 import { connect } from "@/dbconfig/dbconfig";
 import RegularCheckup from "@/models/RegularCheckup";
-
+import ServiceUsage from "@/models/ServiceUsage";
 // params i.e id=regularcheckup._id
 
 
@@ -63,5 +63,59 @@ export async function GET({ params }: { params: { id: string } }) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+
+export async function PUT(req: NextRequest) {
+  try {
+    await connect();
+
+    const { regularCheckupId, treatmentServices } = await req.json();
+
+    if (!regularCheckupId || !Array.isArray(treatmentServices) || treatmentServices.length === 0) {
+      return NextResponse.json({ error: "Invalid request data" }, { status: 400 });
+    }
+
+    const createdServices = await Promise.all(
+      treatmentServices.map(async (service: any) => {
+        const newService = new ServiceUsage({
+          service: service.serviceId,
+          unit: service.unit,
+          totalCost: service.totalCost,
+          note: service.note || "",
+          dateProvided: new Date(service.dateProvided),
+          isProvided: service.isProvided,
+          isPaid: service.isPaid
+        });
+        await newService.save();
+        return newService._id;
+      })
+    );
+
+    const admissionUpdate = await RegularCheckup.findByIdAndUpdate(
+      regularCheckupId,
+      { $push: { treatmentServices: { $each: createdServices } } },
+      { new: true }
+    );
+
+    if (!admissionUpdate) {
+      return NextResponse.json(
+        { error: "Active hospital admission not found for this patient" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Treatment services added successfully" },
+      { status: 200 }
+    );
+
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

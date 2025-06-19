@@ -1,8 +1,7 @@
 import { NextResponse,NextRequest } from "next/server";
 import { connect } from "@/dbconfig/dbconfig";
 import HospitalAdmissions from "@/models/HospitalAdmissions";
-import MedicalHistory from "@/models/MedicalHistory";
-
+import ServiceUsage from "@/models/ServiceUsage";
 
 // params id=admission._id
 
@@ -63,5 +62,59 @@ export async function GET({ params }: { params: { id: string } }) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+
+export async function PUT(req: NextRequest) {
+  try {
+    await connect();
+
+    const { profileId, treatmentServices } = await req.json();
+
+    if (!profileId || !Array.isArray(treatmentServices) || treatmentServices.length === 0) {
+      return NextResponse.json({ error: "Invalid request data" }, { status: 400 });
+    }
+
+    const createdServices = await Promise.all(
+      treatmentServices.map(async (service: any) => {
+        const newService = new ServiceUsage({
+          service: service.serviceId,
+          unit: service.unit,
+          totalCost: service.totalCost,
+          note: service.note || "",
+          dateProvided: new Date(service.dateProvided),
+          isProvided: service.isProvided,
+          isPaid: service.isPaid
+        });
+        await newService.save();
+        return newService._id;
+      })
+    );
+
+    const admissionUpdate = await HospitalAdmissions.findOneAndUpdate(
+      { patient: profileId, isDischarged: false },
+      { $push: { treatmentServices: { $each: createdServices } } },
+      { new: true }
+    );
+
+    if (!admissionUpdate) {
+      return NextResponse.json(
+        { error: "Active hospital admission not found for this patient" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Treatment services added successfully" },
+      { status: 200 }
+    );
+
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
