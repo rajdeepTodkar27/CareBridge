@@ -9,6 +9,7 @@ export interface IDoctor extends Document {
   user: Types.ObjectId;
   empId: String;
   fullName: string;
+  avtarImg: string;
   mobileNo: number;
   gender: string;
   medicalSpeciality: string;
@@ -22,6 +23,7 @@ const doctorschema = new Schema<IDoctor> ({
   user: {type: mongoose.Schema.ObjectId, ref: 'User', required: true},
   empId: {type:String, required: true},
   fullName: {type: String, required: true},
+  avtarImg: {type: String,default: ""},
   mobileNo: {type: Number, required: true},
   gender: {type: String, enum: ['male', 'female', 'trans'], required: true},
   medicalSpeciality: {type: String, required: true},

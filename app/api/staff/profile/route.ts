@@ -34,7 +34,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
     try {
         await connect()
-        const {fullName,mobileNo, gender, qualification,institute} =await req.json()
+        const {fullName,mobileNo, gender, qualification,institute,avatarUrl} =await req.json()
         const session = await getServerSession(authOptions)
         if (!session ) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -45,14 +45,14 @@ export async function POST(req: NextRequest) {
         }
         const isProfileExists = await ProfileStaff.findOne({user: user._id})
         if(isProfileExists){
-            await ProfileStaff.findByIdAndUpdate(isProfileExists._id,{$set: {fullName,mobileNo, gender,qualification,institute}})
+            await ProfileStaff.findByIdAndUpdate(isProfileExists._id,{$set: {fullName,mobileNo, gender,qualification,institute,avtarImg: avatarUrl}})
             return NextResponse.json({message: "successfully updated the profile"},{status: 200})
         }
         let staffConst = await Counter.findOneAndUpdate({centerId:user.centerId},{$inc: {count:1}},{new: true,upsert: true})
         let role=""
         if(user.role==="nurse"){role="NR"}else if(user.role==="staff"){role="ST"}else if(user.role==="accountant"){role="ACC"}
         const empId=`${user.centerId}-${role}-${staffConst.count.toString().padStart(4, "0")}`
-        const profile = new ProfileStaff({user: user._id,empId,fullName,mobileNo, gender,qualification,institute})
+        const profile = new ProfileStaff({user: user._id,empId,fullName,mobileNo, gender,qualification,institute,avtarImg: avatarUrl})
         await profile.save()
         return NextResponse.json({message: "successfully created the profile"},{status:200})
     } catch (error) {

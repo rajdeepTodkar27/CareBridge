@@ -3,6 +3,7 @@ import mongoose,{Document,Schema,models,model, Types} from "mongoose";
 
 export interface IProfileStaff extends Document {
   user: Types.ObjectId;
+  avtarImg: string;
   empId: string;
   fullName: string;
   mobileNo: number;
@@ -15,6 +16,7 @@ export interface IProfileStaff extends Document {
 const profilestaffschema = new Schema <IProfileStaff> ({
   user: {type: mongoose.Schema.ObjectId, ref: 'User', required: true},
   empId: {type: String,required:true},
+  avtarImg: {type: String,default: ""},
   fullName: {type: String, required: true},
   mobileNo: {type: Number, required: true},
   gender: {type: String, enum: ['male', 'female', 'trans'], required: true},

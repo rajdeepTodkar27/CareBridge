@@ -28,11 +28,12 @@ export async function GET(req: NextRequest) {
     }
 }
 
-export async function Post(req: NextRequest) {
+export async function POST(req: NextRequest) {
     try {
         await connect();
+        
         const { email, fullName, aadharNo, gender, dateOfBirth, mobileNo, emergencyContact, occupation, lifestyle,
-            weight, height, bmi, heartRate, bloodSugar, bloodPressure, temperature,
+            weight, height, bmi, heartRate, bloodSugar, bloodPressure, temperature,avatarUrl 
         } = await req.json()
         const user = await User.findOne({ email })
         if (!user) {
@@ -52,10 +53,10 @@ export async function Post(req: NextRequest) {
             patientvital = await Vitals.findByIdAndUpdate(vitals._id, { $set: { weight, height, bmi, heartRate, bloodSugar, bloodPressure, temperature } }, { new: true })
         }
         if (patientProfile) {
-            await PatientsProfile.findByIdAndUpdate(patientProfile._id, { $set: { fullName, aadharNo, gender, dateOfBirth, mobileNo, emergencyContact, occupation, lifestyle } })
+            await PatientsProfile.findByIdAndUpdate(patientProfile._id, { $set: { fullName, aadharNo, gender, dateOfBirth, mobileNo, emergencyContact, occupation, lifestyle,avtarImg: avatarUrl } })
             return NextResponse.json({ message: "successfully updated the patients profile" }, { status: 200 })
         }
-        const patientProf = new PatientsProfile({ patient: user._id, fullName, aadharNo, gender, dateOfBirth, mobileNo, emergencyContact, occupation, lifestyle, vitals: patientvital?._id || vitals?._id })
+        const patientProf = new PatientsProfile({ patient: user._id, fullName, aadharNo, gender, dateOfBirth, mobileNo, emergencyContact, occupation, lifestyle,avtarImg: avatarUrl, vitals: patientvital?._id || vitals?._id })
         await patientProf.save()
         return NextResponse.json({ message: "successfully created the profile" }, { status: 201 })
     } catch (error) {

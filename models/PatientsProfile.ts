@@ -7,6 +7,7 @@ import Payment from "./Payment"
 
 export interface IPatient extends Document {
   patient: Types.ObjectId;
+  avtarImg: string;
   fullName: string;
   aadharNo: number;
   gender: string;
@@ -20,6 +21,7 @@ export interface IPatient extends Document {
 
 const patientschema = new Schema <IPatient> ({
   patient: {type: mongoose.Schema.ObjectId, ref: 'User', required: true},
+  avtarImg: {type: String,default: ""},
   fullName: {type: String,required: true},
   aadharNo: {type: Number,required: true},
   gender: {type: String, enum: ['male', 'female', 'trans']},
