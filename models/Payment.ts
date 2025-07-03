@@ -14,7 +14,7 @@ export interface IPayment extends Document {
 }
 
 const paymentschema = new Schema <IPayment> ({
-  patient: {type: mongoose.Schema.ObjectId, ref: 'User'},
+  patient: {type: mongoose.Schema.ObjectId, ref: 'User',required: true},
   date:  {type: Date, required: true},
   hospital: {type: mongoose.Schema.ObjectId, ref: 'AllCare'},
   service: [{type: mongoose.Schema.ObjectId, ref: 'ServiceUsage'}],

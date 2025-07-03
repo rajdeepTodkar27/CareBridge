@@ -12,19 +12,19 @@ const Page = () => {
           title="Create Care Centre"
           subtitle="Register a new care centre in the system"
           Icon={Building2}
-          navRoute="/branchadmin/create-carecenter"
+          navRoute="/admin/create-carecenter"
         />
         <HomeCard 
           title="Assign Staff"
           subtitle="Link staff members to a care centre"
           Icon={UserPlus}
-          navRoute="/branchadmin/assign-staff"
+          navRoute="/admin/assign-staff"
         />
         <HomeCard 
           title="View Care Centres"
-          subtitle="Browse all care centres and their assigned staff "
+          subtitle="Browse all care centres and their assigned staff"
           Icon={ListTree}
-          navRoute="/branchadmin/view-carecenter"
+          navRoute="/admin/view-carecenter"
         />
       </div>
     </div>

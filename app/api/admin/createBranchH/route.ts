@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
         await connect();
         const {branchId,centerId, name, type, address, city, state, email, phoneNo, latitude, longitude} = await req.json()
 
-        const isBranchExist = await AllCare.findOne({branchId})
+        const isBranchExist = await AllCare.findOne({centerId})
 
         if(isBranchExist){
             return NextResponse.json({error: "branch already exists"},{status: 400})
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 export async function GET() {
     try {
         await connect();
-        const allHospitals = await AllCare.find()
+        const allHospitals = await AllCare.find().select("name branchId centerId type")
         if (allHospitals.length ===0) {
             return NextResponse.json({message: "No branches of hospital found"}, {status: 404})
         }
