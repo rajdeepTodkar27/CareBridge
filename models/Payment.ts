@@ -19,7 +19,7 @@ const paymentschema = new Schema <IPayment> ({
   hospital: {type: mongoose.Schema.ObjectId, ref: 'AllCare'},
   service: [{type: mongoose.Schema.ObjectId, ref: 'ServiceUsage'}],
   subscription : {type: mongoose.Schema.ObjectId, ref: 'Subscription'},
-  paymentMethod: {type: String, enum: ['upi', 'card', 'cash', 'netbanking']},
+  paymentMethod: {type: String, enum: ['razorpay', 'cash']},
   paymentId: {type: String,default:""}
 })
 

@@ -8,10 +8,12 @@ import AllCare from "@/models/AllCare";
 // this will get req from /admin/branches/centerId and from the params according to branch they will get data
 
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(req: NextRequest,{ params }: { params: { id: string } }) {
     try {
         await connect();
-        const { id } = params;
+        const {id} = params;
+        console.log(id);
+        
         const allCenter  = await AllCare.findOne({centerId: id})
         const staff = await User.find({ centerId: id })
         if (staff.length === 0) {

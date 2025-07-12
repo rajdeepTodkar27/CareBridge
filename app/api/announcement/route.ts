@@ -48,18 +48,20 @@ export async function POST(req: NextRequest) {
     let senderModel = "";
 
     if (user.role === "doctor") {
-      const doctorProfile = await ProfileDoctor.findOne({ userId: user._id }).select("_id");
+      const doctorProfile = await ProfileDoctor.findOne({ user: user._id }).select("_id");
       if (doctorProfile) {
         profileId = doctorProfile._id;
         senderModel = "ProfileDoctor";
       }
     } else if (user.role === "accountant" || user.role === "receptionist") {
-      const staffProfile = await ProfileStaff.findOne({ userId: user._id }).select("_id");
+      const staffProfile = await ProfileStaff.findOne({ user: user._id }).select("_id");
       if (staffProfile) {
         profileId = staffProfile._id;
         senderModel = "ProfileStaff";
-      }
+      } 
     }
+console.log(profileId);
+console.log(senderModel);
 
     if (!profileId || !senderModel) {
       return NextResponse.json({ success: false, message: "Profile not found" }, { status: 404 });

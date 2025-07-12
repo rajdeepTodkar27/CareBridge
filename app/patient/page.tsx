@@ -1,72 +1,82 @@
-"use client"
-import React from 'react'
-import { Hospital,CalendarPlus,BedDouble,HeartPulse,Megaphone,ReceiptText,Utensils,Bot } from 'lucide-react'
-import HomeCard from '@/libs/ui/components/HomeCard'
+'use client';
 
-const Page = () => {
+import React from 'react';
+import HomeCard from '@/libs/ui/components/HomeCard';
+
+const HomePage = () => {
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <main className="bg-[var(--background-color)] text-[var(--text-color)] min-h-screen font-roboto">
+      <div className="container mx-auto px-6 py-12">
+        <h1 className="text-4xl font-bold text-gray-800">Welcome back,</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        <HomeCard
-          title="Care Centers"
-          subtitle="Browse available care centers and facilities"
-          Icon={Hospital}
-          navRoute="/patient/care-center"
-        />
+        <section className="mt-12">
+          <h2 className="text-2xl font-semibold text-gray-700 mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <HomeCard
+              title="Care Centers"
+              subtitle="Browse available care centers and facilities"
+              navRoute="/patient/care-center"
+              icon="store"
+            />
+            <HomeCard
+              title="Appointment"
+              subtitle="Book appointments and track their status"
+              navRoute="/patient/appointment"
+              icon="event"
+            />
+            <HomeCard
+              title="Active Admission"
+              subtitle="View your current hospital admissions"
+              navRoute="/patient/active-admission"
+              icon="bed"
+            />
+            <HomeCard
+              title="Regular Checkups"
+              subtitle="Track your checkup schedule and treatments"
+              navRoute="/patient/regular-checkup"
+              icon="favorite_border"
+            />
+            <HomeCard
+              title="Announcement & Community"
+              subtitle="Access health tips, updates, and discussions"
+              navRoute="/patient/community"
+              icon="campaign"
+            />
+            <HomeCard
+              title="Chatbot"
+              subtitle="Instant support for your health-related queries"
+              navRoute="/patient/chatbot"
+              icon="chat_bubble_outline"
+            />
+          </div>
+        </section>
 
-        <HomeCard
-          title="Appointment"
-          subtitle="Book appointments and track their status"
-          Icon={CalendarPlus}
-          navRoute="/patient/appointment"
-        />
-
-        <HomeCard
-          title="Active Admission"
-          subtitle="View your current hospital admissions"
-          Icon={BedDouble}
-          navRoute="/patient/admission"
-        />
-
-        <HomeCard
-          title="Regular Checkups"
-          subtitle="Track your checkup schedule and treatments"
-          Icon={HeartPulse}
-          navRoute="/patient/view-carecenter"
-        />
-
-        <HomeCard
-          title="Announcement & Community"
-          subtitle="Access health tips, updates, and discussions"
-          Icon={Megaphone}
-          navRoute="/patient/community"
-        />
-
-        <HomeCard
-          title="Chatbot"
-          subtitle="Instant support for your health-related queries"
-          Icon={Bot}
-          navRoute="/patient/chatboat"
-        />
-
-        <HomeCard
-          title="Meal Planner"
-          subtitle="Personalized healthy meal suggestions"
-          Icon={Utensils}
-          navRoute="/patient/meal-planner"
-        />
-
-        <HomeCard
-          title="Payment History"
-          subtitle="Check your past payments and invoices"
-          Icon={ReceiptText}
-          navRoute="/patient/payment-history"
-        />
-
+        <section className="mt-16">
+          <h2 className="text-2xl font-semibold text-gray-700 mb-6">Health Management</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <HomeCard
+              title="Meal Planner"
+              subtitle="Personalized healthy meal suggestions"
+              navRoute="/patient/meal-planner"
+              icon="restaurant_menu"
+            />
+            <HomeCard
+              title="Payment History"
+              subtitle="Check your past payments and invoices"
+              navRoute="/patient/payment-history"
+              icon="receipt_long"
+            />
+            <HomeCard
+              title="Medical History"
+              subtitle="View your past diagnoses and treatments"
+              navRoute="/patient/medical-history"
+              icon="medical_services"
+            />
+          </div>
+        </section>
       </div>
-    </div>
-  )
-}
+    </main>
+  );
+};
 
-export default Page
+export default HomePage;

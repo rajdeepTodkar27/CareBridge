@@ -34,13 +34,15 @@ export async function GET() {
             return NextResponse.json({error: "Unauthorized user"},{status: 401})
         } 
         const centerId =  session.user.centerId
+        // console.log(centerId);
+        
         const appointments = await DoctorAppointmentRequest.find({hospitalCenterId: centerId,requestStatus: {$in: ["pending","rejected"]}})
-        .populate({path: "patient",select: "fullName ",populate: {path: "user", select: "email"} })
+        .populate({path: "patient",select: "fullName mobileNo gender avtarImg dateOfBirth",populate: {path: "user", select: "email"} })
         .populate({path: "doctor",select:"fullName empId" })
         .populate({path: "subscription",select: "endingDate" })
         .select('description requestDateTime requestStatus')
 
-        if(!appointments){
+        if(appointments.length===0){
             return NextResponse.json({message: "no appointment reqests found"},{status: 404})
         }
         return NextResponse.json({message: "successfully fetched appointment requests", data: appointments},{status: 200})

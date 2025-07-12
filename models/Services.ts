@@ -17,7 +17,7 @@ const servicesschema = new Schema <IServices> ({
   category:  {type: String, default: ""},
   department:  {type: String, default: ""},
   baseCost: Number,
-  unit: Number,
+  unit: String,
   description:  {type: String, default: ""},
   isActive: {type: Boolean, default: true}
 })

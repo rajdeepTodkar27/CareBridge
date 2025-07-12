@@ -18,7 +18,7 @@ const subscriptionschema = new Schema <ISubsription> ({
   startingDate:{type: Date, required: true},
   endingDate: {type: Date, required: true},
   status:  {type: String, enum: ['active', 'expired', 'cancelled']},
-  paymentMethod: {type: String, enum: ['upi', 'card', 'cash', 'netbanking']},
+  paymentMethod: {type: String, enum: ['razorpay', 'cash']},
   paymentId: String
 })
 

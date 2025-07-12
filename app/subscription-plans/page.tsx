@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import { useRouter } from 'next/navigation';
 type tplan = {
   _id: string,
   planName: string;
@@ -15,9 +15,8 @@ type tplan = {
 
 const PricingSection: React.FC = () => {
   const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly');
-
   const [allplans, setallplans] = useState<tplan[]>([])
-
+   const router = useRouter();
   useEffect(() => {
     const fetchplans = async () => {
       try {
@@ -96,6 +95,7 @@ const PricingSection: React.FC = () => {
                 ))}
                 <button
                   className={`flex items-center mt-auto text-white bg-green-500 hover:bg-green-600 border-0 py-2 px-4 w-full focus:outline-none rounded`}
+                  onClick={() => router.push('/patient/subscribe')}
                 >
                   Subscribe
                   <svg

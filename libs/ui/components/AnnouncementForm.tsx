@@ -38,7 +38,7 @@ export function AnnouncementForm({ onPosted }: { onPosted: () => void }) {
         <>
             <button
                 onClick={() => setOpen(true)}
-                className="bg-blue-600 text-white p-3 sm:px-4 sm:py-2 rounded-full sm:rounded hover:bg-blue-700 transition duration-200 flex items-center justify-center shadow-md"
+                className="bg-green-500 text-white p-3 sm:px-4 sm:py-2 rounded-full sm:rounded hover:bg-green-700 transition duration-200 flex items-center justify-center shadow-md"
                 aria-label="Post Announcement"
             >
                 <PlusCircle className="w-6 h-6 sm:mr-2" />

@@ -28,6 +28,6 @@ const docappreqschema = new Schema<IDocAppReq>({
   scheduledTime: {type: String, default: ""},
   responceFromH: {type: String, default: ""},
 
-})
+}) 
 
 export default models.DoctorAppointmentRequest || model<IDocAppReq> ("DoctorAppointmentRequest",docappreqschema)

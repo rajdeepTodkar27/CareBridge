@@ -1,36 +1,36 @@
 "use client"
-import React from 'react'
-import {Megaphone,HeartPulse,BedDouble } from 'lucide-react'
-import HomeCard from '@/libs/ui/components/HomeCard'
+import React from "react"
+import HomeCard from "@/libs/ui/components/HomeCard"
 
 const Page = () => {
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <main className="container mx-auto px-6 py-12">
+      <h1 className="text-4xl font-bold text-gray-800">Welcome back,</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        <HomeCard
-          title="Admitted Patients"
-          subtitle="Manage care for actively admitted patients"
-          Icon={BedDouble}
-          navRoute="/nurse/create-carecenter"
-        />
-
-        <HomeCard
-          title="Regular Checkup"
-          subtitle="Support and track outpatient visits"
-          Icon={HeartPulse}
-          navRoute="/nurse/regular-checkup"
-        />
-
-        <HomeCard
-          title="Announcement & Community"
-          subtitle="Health posts and updates for nursing staff"
-          Icon={Megaphone}
-          navRoute="/nurse/community"
-        />
-
-      </div>
-    </div>
+      <section className="mt-12">
+        <h2 className="text-2xl font-semibold text-gray-700 mb-6">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <HomeCard
+            title="Admitted Patients"
+            subtitle="Manage care for actively admitted patients"
+            icon="bed"
+            navRoute="/nurse/create-carecenter"
+          />
+          <HomeCard
+            title="Regular Checkup"
+            subtitle="Support and track outpatient visits"
+            icon="favorite_border"
+            navRoute="/nurse/regular-checkup"
+          />
+          <HomeCard
+            title="Announcement & Community"
+            subtitle="Health posts and updates for nursing staff"
+            icon="campaign"
+            navRoute="/nurse/community"
+          />
+        </div>
+      </section>
+    </main>
   )
 }
 

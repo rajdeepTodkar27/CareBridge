@@ -9,10 +9,10 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 
 // id is centerId
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(req:NextRequest,{ params }: { params: { id: string } }) {
     try {
         await connect()
-        const id = params.id
+        const id =  params.id
         const services = await Services.find({centerId: id})
         if(services.length === 0){
             return NextResponse.json({error : "services not found"},{status: 404})
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
        
         const {  serviceName,centerId,category, department,baseCost,unit,description,isActive} = await req.json()
         const session = await getServerSession(authOptions)
-        if(!session || session.user.role !== "branchadmin"){
+        if(!session){
             return NextResponse.json({error: "Unauthorized"},{status: 401})
         }
         const service = new Services({serviceName,centerId,category, department,baseCost,unit,description,isActive})
@@ -44,16 +44,18 @@ export async function POST(req: NextRequest) {
     }
 }
 
-export async function PUT(req: NextRequest) {
+export async function PUT(req: NextRequest,{ params }: { params: { id: string } }) {
     try {
         await connect()
-       
-        const {  serviceId,serviceName,centerId,category, department,baseCost,unit,description,isActive} = await req.json()
+        const centerId =  params.id
+        console.log(centerId);
+        
+        const {  _id,serviceName,category, department,baseCost,unit,description,isActive} = await req.json()
         const session = await getServerSession(authOptions)
-        if(!session || session.user.role !== "branchadmin"){
+        if(!session){
             return NextResponse.json({error: "Unauthorized"},{status: 401})
         }
-        const service = await Services.findByIdAndUpdate(serviceId,{$set: {serviceName,centerId,category, department,baseCost,unit,description,isActive}})
+        const service = await Services.findByIdAndUpdate(_id,{$set: {serviceName,centerId,category, department,baseCost,unit,description,isActive}})
 
         return NextResponse.json({message: "update the service"},{status: 200})
     } catch (error) {

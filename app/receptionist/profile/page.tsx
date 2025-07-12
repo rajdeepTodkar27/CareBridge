@@ -157,8 +157,8 @@ const Page = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card title="Addmitted Patients" icon={<Stethoscope className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/Receptionist/admitted-patients')} />
-                    <Card title="Dashboard" icon={<LayoutDashboard className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/Receptionist/dashboard')} />
+                    <Card title="Addmitted Patients" icon={<Stethoscope className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/receptionist/admitted-patients')} />
+                    <Card title="Dashboard" icon={<LayoutDashboard className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/receptionist/dashboard')} />
                 </div>
             </div>
         </main>

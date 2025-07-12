@@ -25,7 +25,7 @@ export async function GET() {
             .findOne({ patient: profile._id })
             .sort({ requestDateTime: -1 })
             .populate({ path: "doctor", select: "fullName empId" })
-            .populate({ path: "subscription", select: "endingDate" })
+            // .populate({ path: "subscription", select: "endingDate" })
             .select("-patient");
 
         if (!recentAppointment) {
