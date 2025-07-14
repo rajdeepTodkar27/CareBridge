@@ -5,6 +5,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Subscription from "@/models/Subscription";
 import User from "@/models/User";
 import Payment from "@/models/Payment";
+import SubscriptionPlans from "@/models/SubscriptionPlans";
 
  
 
@@ -26,6 +27,8 @@ export async function POST(req: NextRequest) {
 
     const now = new Date();
 
+    const subscriptionPlan = await SubscriptionPlans.findById(plan)
+    if(!subscriptionPlan) return NextResponse.json({error: "not found subscription plan"},{status: 404})
 
     let endingDate = new Date(now);
     if (billingCycle === "monthly") {
@@ -42,6 +45,8 @@ export async function POST(req: NextRequest) {
       billingCycle,
       startingDate: now,
       endingDate,
+      availableFreeConsultions: subscriptionPlan.freeConsultions,
+      pharmacyDiscount: subscriptionPlan.pharmacyDiscount,
       status: "active",
       paymentMethod,
       paymentId,
@@ -68,4 +73,28 @@ export async function POST(req: NextRequest) {
     console.error("Subscription Error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
+}
+
+
+export async function GET() {
+    try {
+        await connect()
+        const session = await getServerSession(authOptions);
+        if(!session || session.user.role != "patient" ){
+            return NextResponse.json({error: "Unauthorized user"},{status: 401})
+        }
+        const user = await User.findOne({email: session.user.email})
+        if(!user){
+            return NextResponse.json({error: "user not found"},{status: 404})
+        }
+        const subscription = await Subscription.findOne({patient:user._id ,status: "active"}).populate({path: "plan", select: "freeConsultions planName price"})
+        if(!subscription) {
+            return NextResponse.json({error: "subscription not found"},{status: 404})
+        }
+        return NextResponse.json({message: "successfully fetched the subscription details",data: subscription},{status: 200})
+
+    } catch (error) {
+        console.log(error);
+        return NextResponse.json({error: "Internal server error"},{status: 500})
+    }
 }

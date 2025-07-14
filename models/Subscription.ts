@@ -8,6 +8,8 @@ export interface ISubsription extends Document {
   startingDate: Date;
   endingDate: Date;
   status: string;
+  availableFreeConsultions: number;
+  pharmacyDiscount: number;
   paymentMethod: string;
   paymentId: string
 }
@@ -17,6 +19,8 @@ const subscriptionschema = new Schema <ISubsription> ({
   plan: {type: mongoose.Schema.ObjectId, ref: 'SubscriptionPlans', required: true},
   startingDate:{type: Date, required: true},
   endingDate: {type: Date, required: true},
+  availableFreeConsultions: {type: Number,required: true},
+  pharmacyDiscount: {type: Number,required: true},
   status:  {type: String, enum: ['active', 'expired', 'cancelled']},
   paymentMethod: {type: String, enum: ['razorpay', 'cash']},
   paymentId: String

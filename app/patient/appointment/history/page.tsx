@@ -2,19 +2,18 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "@/libs/ui/card";
 import { CalendarCheck, Clock } from "lucide-react";
 
 export default function AppointmentHistoryPage() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [checkups, setCheckups] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showCheckups, setShowCheckups] = useState(true); // Default to showing checkups
+  const [showCheckups, setShowCheckups] = useState(true);
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await axios.get("/api/patient/appointment-history");
+        const res = await axios.get("/api/patient/regular-checkup");
         setAppointments(res.data.data.appReq);
         setCheckups(res.data.data.regularCheckups);
       } catch (err) {
@@ -29,82 +28,82 @@ export default function AppointmentHistoryPage() {
   if (loading) return <div className="p-4 text-center">Loading...</div>;
 
   return (
-    <div className="max-w-5xl mx-auto p-4 space-y-8">
-      <div className="join flex justify-center mb-4">
+    <div className="max-w-6xl mx-auto p-4 space-y-8">
+      {/* Toggle Buttons */}
+      <div className="join flex flex-wrap justify-center gap-2">
         <button
-          className={`btn join-item ${showCheckups ? "btn-primary" : "btn-outline"}`}
+          className={`btn join-item w-full sm:w-auto ${showCheckups ? "bg-green-700 text-white" : "btn-outline"}`}
           onClick={() => setShowCheckups(true)}
         >
           Regular Checkups
         </button>
         <button
-          className={`btn join-item ${!showCheckups ? "btn-primary" : "btn-outline"}`}
+          className={`btn join-item w-full sm:w-auto ${!showCheckups ? "bg-green-700 text-white" : "btn-outline"}`}
           onClick={() => setShowCheckups(false)}
         >
           Appointment Requests
         </button>
       </div>
 
-      <div className="flex w-full flex-col lg:flex-row gap-4">
-        {showCheckups && (
-          <div className="card bg-base-300 rounded-box grow p-4">
-            <h2 className="text-xl font-semibold flex items-center gap-2 mb-2">
-              <CalendarCheck className="w-5 h-5 text-green-500" /> Regular Checkups
-            </h2>
-            {checkups.length > 0 ? (
-              <ul className="space-y-3">
-                {checkups.map((checkup, idx) => (
-                  <li
-                    key={idx}
-                    className="bg-white p-4 rounded-xl shadow border space-y-1"
-                  >
-                    <div className="text-sm font-medium text-gray-800">
-                      Doctor: {checkup.appointmentRequest.doctor?.fullName ?? "N/A"}
-                    </div>
-                    <div className="text-xs text-gray-600">
-                      Follow-up: {checkup.followUpDate || "Not set"}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Notes: {checkup.notes || "No notes"}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-gray-500">No checkups found.</p>
-            )}
-          </div>
-        )}
-
-        {!showCheckups && (
-          <div className="card bg-base-300 rounded-box grow p-4">
-            <h2 className="text-xl font-semibold flex items-center gap-2 mb-2">
-              <Clock className="w-5 h-5 text-orange-500" /> Appointment Requests
-            </h2>
-            {appointments.length > 0 ? (
-              <ul className="space-y-3">
-                {appointments.map((app, idx) => (
-                  <li
-                    key={idx}
-                    className="bg-white p-4 rounded-xl shadow border space-y-1"
-                  >
-                    <div className="text-sm font-medium text-gray-800">
-                      Status: {app.requestStatus}
-                    </div>
-                    <div className="text-xs text-gray-600">
-                      Request Date: {app.requestDateTime}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Description: {app.description || "No description"}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-gray-500">No appointment requests found.</p>
-            )}
-          </div>
-        )}
+      {/* Display Cards */}
+      <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+        {showCheckups
+          ? checkups.length > 0
+            ? checkups.map((checkup, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white rounded-xl shadow-md p-4 border hover:shadow-lg transition"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                      <CalendarCheck className="h-5 w-5 text-green-600" />
+                      Regular Checkup
+                    </h3>
+                    <span className="text-xs text-gray-500">
+                      {checkup.followUpDate
+                        ? new Date(checkup.followUpDate).toLocaleDateString()
+                        : "Follow-up: Not set"}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-700">
+                    <strong>Doctor:</strong> {checkup.appointmentRequest?.doctor?.fullName ?? "N/A"}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    <strong>Notes:</strong> {checkup.notes || "No notes"}
+                  </p>
+                </div>
+              ))
+            : <p className="text-sm text-gray-500 col-span-full text-center">No checkups found.</p>
+          : appointments.length > 0
+            ? appointments.map((app, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white rounded-xl shadow-md p-4 border hover:shadow-lg transition"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                      <Clock className="h-5 w-5 text-orange-500" />
+                      Appointment
+                    </h3>
+                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${app.requestStatus === "approved"
+                      ? "bg-green-100 text-green-800"
+                      : app.requestStatus === "pending"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-red-100 text-red-800"
+                    }`}>
+                      {app.requestStatus}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-700">
+                    <strong>Date:</strong> {app.requestDateTime ? new Date(app.requestDateTime).toLocaleDateString() : "N/A"}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    <strong>Description:</strong> {app.description || "No description"}
+                  </p>
+                </div>
+              ))
+            : <p className="text-sm text-gray-500 col-span-full text-center">No appointment requests found.</p>
+        }
       </div>
     </div>
   );

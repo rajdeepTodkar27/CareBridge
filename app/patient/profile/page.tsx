@@ -208,7 +208,7 @@ const ProfilePage = () => {
         {/* Quick Access Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card title="Medical History" icon={<Stethoscope className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/patient/medical-history')} />
-          <Card title="Payment History" icon={<CreditCard className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/patient/payment-history')} />
+          <Card title="Membership Details" icon={<CreditCard className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/patient/mymembership')} />
         </div>
       </div>
     </main>

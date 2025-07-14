@@ -7,6 +7,8 @@ import User from "@/models/User";
 import DoctorAppointmentRequest from "@/models/DoctorAppointmentRequest";
 import Subscription from "@/models/Subscription";
 import RegularCheckup from "@/models/RegularCheckup";
+import "@/models/ServiceUsage";
+import "@/models/Services";
 
 export async function POST(req: NextRequest) {
     try {

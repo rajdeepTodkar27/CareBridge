@@ -64,7 +64,7 @@ export default function ScheduleDialog({
                 <div className="relative">
                   <Input
                     type="date"
-                    {...register("sheduledDate", { required: true })}
+                    {...register("sheduledDate", )}
                     className="pl-10"
                   />
                   <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
@@ -78,7 +78,7 @@ export default function ScheduleDialog({
                 <div className="relative">
                   <Input
                     type="time"
-                    {...register("sheduledTime", { required: true })}
+                    {...register("sheduledTime", )}
                     className="pl-10"
                   />
                   <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
@@ -99,7 +99,7 @@ export default function ScheduleDialog({
 
           <Button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            className="w-full bg-green-600 hover:bg-green-700 text-white"
           >
             {type === "accept" ? "Approve Request" : "Reject Request"}
           </Button>
