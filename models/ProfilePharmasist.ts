@@ -5,17 +5,15 @@ import AllCare from "./AllCare";
 export interface IPharmasist extends Document {
   user: Types.ObjectId;
   avtarImg: string;
-  store: Types.ObjectId
-  ownerName: string,
-  licenseNo: string,
+  ownerName: string;
+  licenseNo: string;
   licenseAuthority: string;
   education: string;
-  experience: number
+  experience: number;
 }
 
 const pharmasistschema = new Schema <IPharmasist> ({
   user: {type: mongoose.Schema.ObjectId, ref:'User', required: true},
-  store: {type: mongoose.Schema.ObjectId, ref: 'AllCare', required: true},
   ownerName:{type: String, required: true},
   avtarImg: {type: String,default: ""},
   licenseNo:{type: String, required: true},

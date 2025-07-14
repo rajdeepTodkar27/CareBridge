@@ -3,8 +3,8 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { AnnouncementCard } from "@/libs/ui/components/AnnouncementCard";
-import { AnnouncementForm } from "@/libs/ui/components/AnnouncementForm"; // Make sure this is modal version
+import AnnouncementCard from "@/libs/ui/stitchUi/announcementcard";
+import { AnnouncementForm } from "@/libs/ui/components/AnnouncementForm";
 
 export default function Page() {
   const { data: session, status } = useSession();
@@ -14,7 +14,7 @@ export default function Page() {
   const fetchAnnouncements = async () => {
     try {
       const res = await axios.get("/api/announcement");
-      setAnnouncements(res.data.data); // or res.data.data depending on API shape
+      setAnnouncements(res.data.data); // adjust if shape differs
     } catch (err) {
       console.error("Failed to fetch announcements", err);
     } finally {
@@ -23,18 +23,18 @@ export default function Page() {
   };
 
   useEffect(() => {
-    fetchAnnouncements();
+    if (status === "authenticated") {
+      fetchAnnouncements();
+    }
   }, [status]);
 
   return (
     <main className="min-h-screen bg-gray-100 py-6 px-4">
-      {/* Header with title + button */}
+      {/* Header */}
       <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
           Announcements & Community
         </h1>
-
-        {/* Replace with AnnouncementForm if you're not using modal */}
         <AnnouncementForm onPosted={fetchAnnouncements} />
       </div>
 
@@ -48,11 +48,13 @@ export default function Page() {
           announcements.map((a: any) => (
             <AnnouncementCard
               key={a._id}
-              text={a.text}
-              link={a.link}
+              avatarImg={a.sendersProfileId?.avatarUrl || "https://thumbs.dreamstime.com/b/default-avatar-profile-icon-social-media-user-vector-image-icon-default-avatar-profile-icon-social-media-user-vector-image-209162840.jpg"}
               senderName={a.sendersProfileId?.fullName || "Unknown"}
-              senderRole={a.senderModel?.replace("Profile", "")}
+              senderRole={a.senderModel?.replace("Profile", "") || "Staff"}
               timestamp={a.timestamp}
+              content={a.text}
+              actionHref={a.link}
+              actionText={a.link ? "View More" : undefined}
             />
           ))
         )}

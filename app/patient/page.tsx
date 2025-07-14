@@ -55,6 +55,12 @@ const HomePage = () => {
           <h2 className="text-2xl font-semibold text-gray-700 mb-6">Health Management</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <HomeCard
+              title="Medication Routine"
+              subtitle="Track your medication schedule"
+              navRoute="/patient/medical-routine"
+              icon="medication"
+            />
+            <HomeCard
               title="Meal Planner"
               subtitle="Personalized healthy meal suggestions"
               navRoute="/patient/meal-planner"

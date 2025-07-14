@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, Types, model, models } from "mongoose";
 
 // Define a union type for possible sender profile models
-type SenderModelType = "ProfileStaff" | "ProfileDoctor";
+type SenderModelType = "ProfileStaff" | "ProfileDoctor" | "ProfilePharmasist";
 
 export interface IAnnouncement extends Document {
   sendersProfileId: Types.ObjectId;
@@ -20,7 +20,7 @@ const announcementSchema = new Schema<IAnnouncement>({
   senderModel: {
     type: String,
     required: true,
-    enum: ["ProfileStaff", "ProfileDoctor"],
+    enum: ["ProfileStaff", "ProfileDoctor", "ProfilePharmasist"],
   },
   text: {
     type: String,

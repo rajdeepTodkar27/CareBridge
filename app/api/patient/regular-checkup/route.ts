@@ -11,8 +11,8 @@ import RegularCheckup from "@/models/RegularCheckup";
 export async function POST(req: NextRequest) {
     try {
         await connect();
-        const {doctor,hospitalCenterId,description,requestDate,requestTime} = await req.json();
-        const requestDateTime = requestDate+"T"+requestTime
+        const {doctor,hospitalCenterId,description,requestDate,selectedTimeSlot} = await req.json();
+        const requestDateTime = requestDate+"T"+selectedTimeSlot
         const session = await getServerSession(authOptions)
         if(!session || session.user.role !== "patient"){
             return NextResponse.json({error: "Unauthorized"},{status: 401})

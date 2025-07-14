@@ -6,6 +6,7 @@ import User from "@/models/User";
 import ProfileDoctor from "@/models/ProfileDoctor";
 import ProfileStaff from "@/models/ProfileStaff";
 import Announcement from "@/models/Announcement";
+import ProfilePharmasist from "@/models/ProfilePharmasist";
 
 
 export async function GET() {
@@ -59,9 +60,14 @@ export async function POST(req: NextRequest) {
         profileId = staffProfile._id;
         senderModel = "ProfileStaff";
       } 
+    } else if (user.role === "pharmasist"){
+      const pharmasistProfile = await ProfilePharmasist.findOne({user: user._id}).select("_id")
+      if(pharmasistProfile){
+        profileId+ pharmasistProfile._id
+        senderModel = "ProfilePharmasist"
+      }
     }
-console.log(profileId);
-console.log(senderModel);
+
 
     if (!profileId || !senderModel) {
       return NextResponse.json({ success: false, message: "Profile not found" }, { status: 404 });
