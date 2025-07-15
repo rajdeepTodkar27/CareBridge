@@ -143,7 +143,7 @@ const ProfilePage = () => {
       <div className="max-w-6xl mx-auto space-y-10">
         <div className="bg-white shadow-lg rounded-xl p-8">
           <div className="flex items-center gap-3 mb-8">
-            <User className="w-8 h-8 text-blue-600" />
+            <User className="w-8 h-8 text-green-600" />
             <h2 className="text-2xl font-bold text-gray-900 ">Patient Profile</h2>
           </div>
 
@@ -207,8 +207,8 @@ const ProfilePage = () => {
 
         {/* Quick Access Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card title="Medical History" icon={<Stethoscope className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/patient/medical-history')} />
-          <Card title="Membership Details" icon={<CreditCard className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/patient/mymembership')} />
+          <Card title="Medical History" icon={<Stethoscope className="w-6 h-6 text-green-600" />} onClick={() => router.push('/patient/medical-history')} />
+          <Card title="Membership Details" icon={<CreditCard className="w-6 h-6 text-green-600" />} onClick={() => router.push('/patient/mymembership')} />
         </div>
       </div>
     </main>

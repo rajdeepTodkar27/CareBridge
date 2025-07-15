@@ -120,7 +120,7 @@ const DoctorProfilePage = () => {
       <div className="max-w-5xl mx-auto space-y-10">
         <div className="bg-white shadow-xl rounded-xl p-8">
           <div className="flex items-center gap-3 mb-8">
-            <User className="w-8 h-8 text-blue-600" />
+            <User className="w-8 h-8 text-green-600" />
             <h2 className="text-2xl font-bold text-gray-900">Doctor Profile</h2>
           </div>
 
@@ -166,8 +166,8 @@ const DoctorProfilePage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card title="Regular Checkups" icon={<Stethoscope className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/doctor/regular-checkups')} />
-          <Card title="Addmitted Patients" icon={<ClipboardList className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/doctor/admitted-patients')} />
+          <Card title="Regular Checkups" icon={<Stethoscope className="w-6 h-6 text-green-600" />} onClick={() => router.push('/doctor/regular-checkups')} />
+          <Card title="Addmitted Patients" icon={<ClipboardList className="w-6 h-6 text-green-600" />} onClick={() => router.push('/doctor/admitted-patients')} />
         </div>
       </div>
     </main>

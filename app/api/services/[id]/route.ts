@@ -12,8 +12,8 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 export async function GET(req:NextRequest,{ params }: { params: { id: string } }) {
     try {
         await connect()
-        const id =  params.id
-        const services = await Services.find({centerId: id})
+        const {id} = await params
+        const services =  await Services.find({centerId: id}).sort({isActive: -1})
         if(services.length === 0){
             return NextResponse.json({error : "services not found"},{status: 404})
         }

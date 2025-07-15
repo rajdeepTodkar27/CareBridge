@@ -42,7 +42,7 @@ export async function GET() {
         const email = session.user.email
         const user = await User.findOne({email})
         const medHis = await MedicalHistory.findOne({patient: user._id})
-        .populate({path:"pastPrescriptions",select: "medicine date"})
+        .populate({path:"pastPrescriptions"})
         .select("-patient")
         if(!medHis){
             return NextResponse.json({error: "Not found medical history"},{status: 404})

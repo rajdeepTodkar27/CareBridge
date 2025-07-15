@@ -142,7 +142,7 @@ export default function CreateServicePage() {
               </button>
               <button
                 type="submit"
-                className="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-[#0c7ff2] text-white text-sm font-bold"
+                className="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-green-500 text-white text-sm font-bold"
               >
                 Save
               </button>

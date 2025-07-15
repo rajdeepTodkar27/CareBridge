@@ -13,13 +13,13 @@ import ServiceUsage from "@/models/ServiceUsage";
 // params i.e id=regularcheckup._id
 
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(req: NextRequest,{ params }: { params: { id: string } }) {
   try {
     await connect();
 
-    const regularCheckupId = params.id;
+    const {id} = await params;
 
-    const regularCheckup = await RegularCheckup.findById(regularCheckupId)
+    const regularCheckup = await RegularCheckup.findOne({appointmentRequest: id})
       .populate({
         path: "appointmentRequest",
         populate: {
@@ -42,8 +42,7 @@ export async function GET({ params }: { params: { id: string } }) {
 
     const patientUserId = regularCheckup.appointmentRequest.patient.patient;
 
-    const medicalHistory = await MedicalHistory.findOne({ patient: patientUserId })
-      .populate("pastPrescriptions");
+    
 
     return NextResponse.json({
       message: "Successfully fetched data",
@@ -52,6 +51,7 @@ export async function GET({ params }: { params: { id: string } }) {
           patientUId: patientUserId,
           profileId: regularCheckup.appointmentRequest.patient._id,
           fullName: regularCheckup.appointmentRequest.patient.fullName,
+          dateOfBirth: regularCheckup.appointmentRequest.patient.dateOfBirth,
           gender: regularCheckup.appointmentRequest.patient.gender,
           lifestyle: regularCheckup.appointmentRequest.patient.lifestyle,
           vitals: regularCheckup.appointmentRequest.patient.vitals,
@@ -62,8 +62,7 @@ export async function GET({ params }: { params: { id: string } }) {
           notes: regularCheckup.notes,
           isDone: regularCheckup.isDone,
           treatmentServices: regularCheckup.treatmentServices,
-        },
-        medicalHistory,
+        }
       },
     }, { status: 200 });
 
@@ -108,52 +107,34 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     await connect();
-
-    const { regularCheckupId, treatmentServices } = await req.json();
-
-    if (!regularCheckupId || !Array.isArray(treatmentServices) || treatmentServices.length === 0) {
-      return NextResponse.json({ error: "Invalid request data" }, { status: 400 });
+    const { appointmentRequest, followUpDate, notes } = await req.json();
+    console.log(appointmentRequest);
+    
+    if (!appointmentRequest) {
+      return NextResponse.json({ error: "Missing checkup ID" }, { status: 400 });
     }
 
-    const createdServices = await Promise.all(
-      treatmentServices.map(async (service: any) => {
-        const newService = new ServiceUsage({
-          service: service.serviceId,
-          unit: service.unit,
-          totalCost: service.totalCost,
-          note: service.note || "",
-          dateProvided: new Date(service.dateProvided),
-          isProvided: service.isProvided,
-          isPaid: service.isPaid
-        });
-        await newService.save();
-        return newService._id;
-      })
-    );
-
-    const admissionUpdate = await RegularCheckup.findByIdAndUpdate(
-      regularCheckupId,
-      { $push: { treatmentServices: { $each: createdServices } } },
+    const updatedCheckup = await RegularCheckup.findOneAndUpdate(
+      {appointmentRequest},
+      {
+        $set: {
+          followUpDate,
+          notes,
+        },
+      },
       { new: true }
     );
 
-    if (!admissionUpdate) {
-      return NextResponse.json(
-        { error: "Active hospital admission not found for this patient" },
-        { status: 404 }
-      );
+    if (!updatedCheckup) {
+      return NextResponse.json({ error: "Checkup not found" }, { status: 404 });
     }
 
     return NextResponse.json(
-      { message: "Treatment services added successfully" },
+      { message: "Checkup updated successfully", data: updatedCheckup },
       { status: 200 }
     );
-
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error("Error updating checkup:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

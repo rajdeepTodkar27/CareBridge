@@ -69,7 +69,6 @@ export default function AppointmentRequestsPage() {
   };
 
   const handleDialogSubmit = async (data: FormData) => {
-    alert("hi")
     if (!selected) return;
     const payload = {
       reqId: selected._id,

@@ -51,6 +51,7 @@ export default function AppointmentDetailsDialog({
                     <p><strong>Gender:</strong> {appointment.patient.gender}</p>
                     <p><strong>Email:</strong> {appointment.patient.patient?.email || "N/A"}</p>
                     <p><strong>Doctor:</strong> {appointment.doctor.fullName} ({appointment.doctor.empId})</p>
+                    <p><strong>description:</strong> {appointment.description}</p>
                     <p><strong>Request Date:</strong> {appointment.requestDateTime ? new Date(appointment.requestDateTime).toLocaleDateString() : "N/A"}</p>
                     <p><strong>Request Time:</strong> {appointment.requestDateTime ? new Date(appointment.requestDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"}</p>
                     <p><strong>Subscription Ends:</strong> {appointment.subscription?.endingDate ? new Date(appointment.subscription.endingDate).toISOString().split("T")[0] : "N/A"}</p>

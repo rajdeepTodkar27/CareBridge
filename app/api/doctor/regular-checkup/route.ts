@@ -25,16 +25,21 @@ export async function GET() {
         }
 
         const regularcheckup = await RegularCheckup.find({ isDone: false })
-            .populate({ path: "appointmentRequest", match: { doctor: profile._id }, populate: { path: "patient", select: "patient fullName gender" }, select: "description scheduledTime" })
+            .populate({ path: "appointmentRequest", match: { doctor: profile._id }, populate: { path: "patient", select: "patient avtarImg fullName gender" }, select: "description scheduledTime" })
             .select("appointmentRequest")
 
-            // just regular checkup gives array of null doc if match fails
+        // just regular checkup gives array of null doc if match fails
         const filteredCheckups = regularcheckup.filter(item => item.appointmentRequest !== null);
 
         if (filteredCheckups.length === 0) {
             return NextResponse.json({ error: "Not found regular checkups" }, { status: 404 });
         }
-        return NextResponse.json({ message: "successfully fetched the data", data: filteredCheckups }, { status: 200 })
+        const sortedCheckups = filteredCheckups.sort((a, b) => {
+            const timeA = new Date(a.appointmentRequest.scheduledTime).getTime();
+            const timeB = new Date(b.appointmentRequest.scheduledTime).getTime();
+            return timeA - timeB;
+        });
+        return NextResponse.json({ message: "successfully fetched the data", data: sortedCheckups }, { status: 200 })
     } catch (error) {
         console.log(error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 })
@@ -42,7 +47,7 @@ export async function GET() {
 }
 
 
-// sample responce 
+// sample responce
 
 // {
 //       "_id": "665f3b2de6f8721f4e9e72cb",

@@ -113,7 +113,7 @@ const Page = () => {
             <div className="max-w-5xl mx-auto space-y-10">
                 <div className="bg-white shadow-lg rounded-xl p-8">
                     <div className="flex items-center gap-3 mb-8">
-                        <User className="w-8 h-8 text-blue-600" />
+                        <User className="w-8 h-8 text-green-600" />
                         <h2 className="text-2xl font-bold text-gray-900">Receptionist Profile</h2>
                     </div>
 
@@ -157,8 +157,8 @@ const Page = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card title="Addmitted Patients" icon={<Stethoscope className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/receptionist/admitted-patients')} />
-                    <Card title="Dashboard" icon={<LayoutDashboard className="w-6 h-6 text-blue-600" />} onClick={() => router.push('/receptionist/dashboard')} />
+                    <Card title="Addmitted Patients" icon={<Stethoscope className="w-6 h-6 text-green-600" />} onClick={() => router.push('/receptionist/admitted-patients')} />
+                    <Card title="Dashboard" icon={<LayoutDashboard className="w-6 h-6 text-green-600" />} onClick={() => router.push('/receptionist/dashboard')} />
                 </div>
             </div>
         </main>
