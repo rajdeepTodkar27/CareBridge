@@ -11,7 +11,7 @@ export async function GET() {
         await connect()
         const session = await getServerSession(authOptions)
 
-        if (!session || session.user.role !== "receptionist") {
+        if (!session || !(session.user.role === "receptionist" || session?.user.role==="nurse")) {
             return NextResponse.json({ error: "Unauthorize" }, { status: 401 })
         }
         const centerId = session.user.centerId

@@ -2,11 +2,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "next/navigation";
-
+import { extractPublicId } from "@/libs/utils";
+import MedicalTestSection from "@/libs/ui/components/MedicalTestSection";
+import SurgerySection from "@/libs/ui/components/SurgerySection";
+import PrescriptionTable from "@/libs/ui/components/PrescriptionTable";
 interface Surgery {
   nameOfSurgery: string;
   dateOfSurgery: string;
   reportFile: string;
+}
+
+interface MedicalTest {
+  nameOfTest: string;
+  testfile: string;
 }
 
 interface Medicine {
@@ -26,18 +34,150 @@ interface MedicalHistory {
   currentMedications: string;
   allergies: string;
   geneticDisorders: string;
-  pastMedicalTests: string[];
+  pastMedicalTests: MedicalTest[];
   pastPrescriptions: Prescription[];
 }
 
 export default function MedicalHistoryPage() {
   const { id } = useParams();
   const [data, setData] = useState<MedicalHistory | null>(null);
+  const [medicalTests, setMedicalTests] = useState<MedicalTest[]>([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [testName, setTestName] = useState("");
+  const [newSurgery, setNewSurgery] = useState<Surgery & { file?: File | null }>({
+    nameOfSurgery: "",
+    dateOfSurgery: "",
+    reportFile: "",
+    file: null,
+  });
+
+  const handleAddSurgery = async () => {
+    if (!newSurgery.nameOfSurgery || !newSurgery.dateOfSurgery || !newSurgery.file) {
+      return alert("Please fill all fields.");
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("file", newSurgery.file);
+      formData.append("folder", "surgeryReports");
+
+      const uploadRes = await axios.post("/api/upload", formData);
+      const uploadedUrl = uploadRes.data.secure_url;
+
+      const newSurg = {
+        nameOfSurgery: newSurgery.nameOfSurgery,
+        dateOfSurgery: newSurgery.dateOfSurgery,
+        reportFile: uploadedUrl,
+      };
+
+      const updatedSurgeries = [...(data?.surgeries || []), newSurg];
+
+      await axios.post("/api/doctor/medical-history/surgeries", {
+        patientId: id,
+        ...newSurg,
+      });
+
+      setData((prev) => (prev ? { ...prev, surgeries: updatedSurgeries } : null));
+
+      setNewSurgery({ nameOfSurgery: "", dateOfSurgery: "", reportFile: "", file: null });
+      (document.getElementById("surgery-input") as HTMLInputElement).value = "";
+    } catch (err) {
+      console.error("Failed to add surgery:", err);
+      alert("Error uploading surgery. Please try again.");
+    }
+  };
+
+  const handleDeleteSurgery = async (index: number) => {
+    if (!data) return;
+    const confirmDelete = confirm("Are you sure you want to delete this surgery?");
+    if (!confirmDelete) return;
+
+    const surgeryToDelete = data.surgeries[index];
+    try {
+      const publicId = extractPublicId(surgeryToDelete.reportFile);
+      await axios.post("/api/cloudinary/delete", { publicId });
+
+      const updatedSurgeryList = [...data.surgeries];
+      updatedSurgeryList.splice(index, 1);
+
+      await axios.patch("/api/doctor/medical-history/surgeries", {
+        patientId: id,
+        surgeryToRemove: surgeryToDelete,
+      });
+
+      setData({ ...data, surgeries: updatedSurgeryList });
+    } catch (error) {
+      console.error("Delete surgery failed:", error);
+      alert("Failed to delete surgery. Please try again.");
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const uploadTestFile = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", "medicalTests");
+
+    const uploadRes = await axios.post("/api/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return uploadRes.data.secure_url;
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile || !testName.trim()) {
+      return alert("Please enter test name and select a file.");
+    }
+
+    try {
+      const secureUrl = await uploadTestFile(selectedFile);
+      const testEntry = { nameOfTest: testName.trim(), testfile: secureUrl };
+
+      const updatedTests = [...medicalTests, testEntry];
+      setMedicalTests(updatedTests);
+
+      await axios.put("/api/doctor/medical-history/test", {
+        patientId: id,
+        newTest: testEntry,
+      });
+
+      setSelectedFile(null);
+      setTestName("");
+      (document.getElementById("upload-input") as HTMLInputElement).value = "";
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert("Upload failed.");
+    }
+  };
+
+  const handleDelete = async (index: number) => {
+    const test = medicalTests[index];
+    const publicId = extractPublicId(test.testfile);
+
+    try {
+      await axios.post("/api/cloudinary/delete", { publicId });
+      await axios.delete("/api/doctor/medical-history/test", {
+        data: { patientId: id, testToRemove: test },
+      });
+
+      setMedicalTests((prev) => prev.filter((_, i) => i !== index));
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Deletion failed");
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
     axios.get(`/api/doctor/medical-history/${id}`).then((res) => {
       setData(res.data.data);
+      setMedicalTests(res.data.data.pastMedicalTests);
     });
   }, [id]);
 
@@ -68,52 +208,22 @@ export default function MedicalHistoryPage() {
               {data.pastIllness.split(",").map((illness, i) => renderRow(illness.trim(), ""))}
             </div>
 
-            {/* Surgeries */}
-            <h2 className="text-[#121516] text-xl sm:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Surgeries</h2>
-            <div className="px-4 py-3 @container">
-              <div className="flex overflow-x-auto rounded-xl border border-[#dde1e3] bg-white">
-                <table className="flex-1 min-w-[600px]">
-                  <thead>
-                    <tr className="bg-white">
-                      <th className="table-3f64e334-be2d-4943-ba95-c6f413f42e49-column-120 px-4 py-3 text-left text-[#121516] w-[200px] sm:w-[400px] text-sm font-medium leading-normal">
-                        Surgery Name
-                      </th>
-                      <th className="table-3f64e334-be2d-4943-ba95-c6f413f42e49-column-240 px-4 py-3 text-left text-[#121516] w-[200px] sm:w-[400px] text-sm font-medium leading-normal">Date</th>
-                      <th className="table-3f64e334-be2d-4943-ba95-c6f413f42e49-column-360 px-4 py-3 text-left text-[#121516] w-40 sm:w-60 text-[#6a7881] text-sm font-medium leading-normal">
-                        Report
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.surgeries.map((surg, i) => (
-                      <tr key={i} className="border-t border-t-[#dde1e3]">
-                        <td className="table-3f64e334-be2d-4943-ba95-c6f413f42e49-column-120 h-[72px] px-4 py-2 w-[200px] sm:w-[400px] text-[#121516] text-sm font-normal leading-normal">
-                          {surg.nameOfSurgery}
-                        </td>
-                        <td className="table-3f64e334-be2d-4943-ba95-c6f413f42e49-column-240 h-[72px] px-4 py-2 w-[200px] sm:w-[400px] text-[#6a7881] text-sm font-normal leading-normal">
-                          {surg.dateOfSurgery}
-                        </td>
-                        <td className="table-3f64e334-be2d-4943-ba95-c6f413f42e49-column-360 h-[72px] px-4 py-2 w-40 sm:w-60 text-[#6a7881] text-sm font-bold leading-normal tracking-[0.015em]">
-                          <a href={`${surg.reportFile}`} target="_blank" className="hover:underline">View Report</a>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <style>
-                {/* {`@container(max-width:120px){.table-3f64e334-be2d-4943-ba95-c6f413f42e49-column-120{display: none;}}
-                @container(max-width:240px){.table-3f64e334-be2d-4943-ba95-c6f413f42e49-column-240{display: none;}}
-                @container(max-width:360px){.table-3f64e334-be2d-4943-ba95-c6f413f42e49-column-360{display: none;}}`} */}
-              </style>
-            </div>
+          
 
             {/* Current Medications */}
             <h2 className="text-[#121516] text-xl sm:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Current Medications</h2>
             <div className="p-4 grid grid-cols-1 md:grid-cols-[20%_1fr] gap-x-6">
               {data.currentMedications.split(",").map((med, i) => renderRow(med.trim(), ""))}
             </div>
-
+              {/* Surgeries */}
+            <h2 className="text-[#121516] text-xl sm:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Surgeries</h2>
+            <SurgerySection
+              surgeries={data.surgeries}
+              newSurgery={newSurgery}
+              setNewSurgery={setNewSurgery}
+              handleAddSurgery={handleAddSurgery}
+              handleDeleteSurgery={handleDeleteSurgery}
+            />
             {/* Allergies */}
             <h2 className="text-[#121516] text-xl sm:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Allergies</h2>
             <div className="p-4 grid grid-cols-1 md:grid-cols-[20%_1fr] gap-x-6">
@@ -123,92 +233,25 @@ export default function MedicalHistoryPage() {
             {/* Genetic Disorders */}
             <h2 className="text-[#121516] text-xl sm:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Genetic Disorders</h2>
             <div className="p-4 grid grid-cols-1 md:grid-cols-[20%_1fr] gap-x-6">
-              {renderRow(data.geneticDisorders,"")}
+              {renderRow(data.geneticDisorders, "")}
             </div>
-
-            {/* Medical Tests */}
-            <h2 className="text-[#121516] text-xl sm:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Past Medical Tests</h2>
-            <div className="px-4 py-3 @container">
-              <div className="flex overflow-x-auto rounded-xl border border-[#dde1e3] bg-white">
-                <table className="flex-1 min-w-[400px]">
-                  <thead>
-                    <tr className="bg-white">
-                      <th className="table-10e1a7dc-e598-4189-9cc0-733355dcfd05-column-120 px-4 py-3 text-left text-[#121516] w-[200px] sm:w-[400px] text-sm font-medium leading-normal">
-                        Test Name
-                      </th>
-                      <th className="table-10e1a7dc-e598-4189-9cc0-733355dcfd05-column-360 px-4 py-3 text-left text-[#121516] w-40 sm:w-60 text-[#6a7881] text-sm font-medium leading-normal">
-                        Report
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.pastMedicalTests.map((test, i) => (
-                      <tr key={i} className="border-t border-t-[#dde1e3]">
-                        <td className="table-10e1a7dc-e598-4189-9cc0-733355dcfd05-column-120 h-[72px] px-4 py-2 w-[200px] sm:w-[400px] text-[#121516] text-sm font-normal leading-normal">
-                          Test Report {i + 1}
-                        </td>
-                        <td className="table-10e1a7dc-e598-4189-9cc0-733355dcfd05-column-360 h-[72px] px-4 py-2 w-40 sm:w-60 text-[#6a7881] text-sm font-bold leading-normal tracking-[0.015em]">
-                          <a href={`${test}`} target="_blank" className="hover:underline">View Report</a>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <style>
-                {/* {`@container(max-width:120px){.table-10e1a7dc-e598-4189-9cc0-733355dcfd05-column-120{display: none;}}
-                @container(max-width:240px){.table-10e1a7dc-e598-4189-9cc0-733355dcfd05-column-240{display: none;}}
-                @container(max-width:360px){.table-10e1a7dc-e598-4189-9cc0-733355dcfd05-column-360{display: none;}}`} */}
-              </style>
-            </div>
+     
+            <MedicalTestSection
+              testName={testName}
+              setTestName={setTestName}
+              selectedFile={selectedFile}
+              handleFileChange={handleFileChange}
+              handleUpload={handleUpload}
+              medicalTests={medicalTests}
+              handleDelete={handleDelete}
+            />
 
             {/* Prescriptions */}
             <h2 className="text-[#121516] text-xl sm:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Past Prescriptions</h2>
-            <div className="px-4 py-3 @container">
-              <div className="flex overflow-x-auto rounded-xl border border-[#dde1e3] bg-white">
-                <table className="flex-1 min-w-[800px]">
-                  <thead>
-                    <tr className="bg-white">
-                      <th className="table-cb9cdff7-6ccf-4a29-9812-82c9fab82ed8-column-120 px-4 py-3 text-left text-[#121516] w-[150px] sm:w-[400px] text-sm font-medium leading-normal">
-                        Medicine
-                      </th>
-                      <th className="table-cb9cdff7-6ccf-4a29-9812-82c9fab82ed8-column-240 px-4 py-3 text-left text-[#121516] w-[150px] sm:w-[400px] text-sm font-medium leading-normal">
-                        Quantity
-                      </th>
-                      <th className="table-cb9cdff7-6ccf-4a29-9812-82c9fab82ed8-column-360 px-4 py-3 text-left text-[#121516] w-[150px] sm:w-[400px] text-sm font-medium leading-normal">Dosage</th>
-                      <th className="table-cb9cdff7-6ccf-4a29-9812-82c9fab82ed8-column-480 px-4 py-3 text-left text-[#121516] w-[150px] sm:w-[400px] text-sm font-medium leading-normal">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.pastPrescriptions.map((pres, i) => (
-                      pres.medicine.map((med, j) => (
-                        <tr key={`${i}-${j}`} className="border-t border-t-[#dde1e3]">
-                          <td className="table-cb9cdff7-6ccf-4a29-9812-82c9fab82ed8-column-120 h-[72px] px-4 py-2 w-[150px] sm:w-[400px] text-[#121516] text-sm font-normal leading-normal">
-                            {med.medName}
-                          </td>
-                          <td className="table-cb9cdff7-6ccf-4a29-9812-82c9fab82ed8-column-240 h-[72px] px-4 py-2 w-[150px] sm:w-[400px] text-[#6a7881] text-sm font-normal leading-normal">
-                            {med.quantity}
-                          </td>
-                          <td className="table-cb9cdff7-6ccf-4a29-9812-82c9fab82ed8-column-360 h-[72px] px-4 py-2 w-[150px] sm:w-[400px] text-[#6a7881] text-sm font-normal leading-normal">{med.dosage}</td>
-                          <td className="table-cb9cdff7-6ccf-4a29-9812-82c9fab82ed8-column-480 h-[72px] px-4 py-2 w-[150px] sm:w-[400px] text-[#6a7881] text-sm font-normal leading-normal">
-                            {new Date(pres.date).toISOString().split("T")[0]}
-                          </td>
-                        </tr>
-                      ))
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <style>
-                {/* {`@container(max-width:120px){.table-cb9cdff7-6ccf-4a29-9812-82c9fab82ed8-column-120{display: none;}}
-                @container(max-width:240px){.table-cb9cdff7-6ccf-4a29-9812-82c9fab82ed8-column-240{display: none;}}
-                @container(max-width:360px){.table-cb9cdff7-6ccf-4a29-9812-82c9fab82ed8-column-360{display: none;}}
-                @container(max-width:480px){.table-cb9cdff7-6ccf-4a29-9812-82c9fab82ed8-column-480{display: none;}}`} */}
-              </style>
-            </div>
+            <PrescriptionTable prescriptions={data.pastPrescriptions} />
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

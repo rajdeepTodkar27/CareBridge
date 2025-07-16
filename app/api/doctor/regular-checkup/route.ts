@@ -5,6 +5,8 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import User from "@/models/User";
 import ProfileDoctor from "@/models/ProfileDoctor";
 import RegularCheckup from "@/models/RegularCheckup";
+import "@/models/DoctorAppointmentRequest";
+import "@/models/PatientsProfile";
 
 export async function GET() {
     try {

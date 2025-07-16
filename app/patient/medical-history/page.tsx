@@ -134,78 +134,7 @@ export default function MedicalHistoryPage() {
                     </form>
                 </CardContent>
             </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-lg">Past Prescriptions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    {medicalHistory?.pastPrescriptions && medicalHistory?.pastPrescriptions?.length > 0 ? (
-                        medicalHistory.pastPrescriptions.map((presc: any, idx: number) => (
-                            <div key={idx} className="p-3 border rounded-md text-sm bg-gray-50">
-                                {presc.date}: {presc.medicine}
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-sm text-gray-500">No past prescriptions found.</p>
-                    )}
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-lg">Past Medical Tests</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <UploadCloud className="w-5 h-5 text-green-500" />
-                        <span className="text-sm">Upload Report</span>
-                        <Input type="file" className="hidden" />
-                    </label>
-                    {medicalHistory?.pastMedicalTests && medicalHistory?.pastMedicalTests?.length > 0 ? (
-                        medicalHistory.pastMedicalTests.map((test: string, idx: number) => (
-                            <div key={idx} className="p-3 border rounded-md text-sm bg-gray-50">
-                                {test}
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-sm text-gray-500">No past tests found.</p>
-                    )}
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-lg">Surgeries</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {medicalHistory?.surgeries?.map((surgery: any, idx: number) => (
-                        <div
-                            key={idx}
-                            className="border p-4 rounded-lg bg-gray-50 text-sm space-y-1"
-                        >
-                            <p><strong>Name:</strong> {surgery.nameOfSurgery}</p>
-                            <p><strong>Date:</strong> {surgery.dateOfSurgery}</p>
-                            <p><strong>Report:</strong> <a href={surgery.reportFile} target="_blank" rel="noopener noreferrer" className="text-green-600 underline">View Report</a></p>
-                        </div>
-                    ))}
-
-                    <form className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Input type="text" placeholder="Surgery Name" />
-                        <Input type="date" />
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <UploadCloud className="w-5 h-5 text-green-500" />
-                            <span className="text-sm">Upload Report</span>
-                            <Input type="file" className="hidden" />
-                        </label>
-                        <div className="sm:col-span-2">
-                            <Button className="w-full flex items-center gap-2">
-                                <Plus className="w-4 h-4" /> Add Surgery
-                            </Button>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
+ 
         </div>
     );
 }

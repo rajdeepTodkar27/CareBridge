@@ -3,7 +3,8 @@ import cloudinary from '@/libs/cloudinary';
 
 export async function POST(req: NextRequest) {
   const { publicId } = await req.json();
-
+  console.log(publicId);
+  
   if (!publicId) {
     return NextResponse.json({ error: 'No publicId provided' }, { status: 400 });
   }

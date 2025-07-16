@@ -67,7 +67,7 @@ const PharmacistProfilePage = () => {
         const file = formData.avatarFile[0];
         const uploadForm = new FormData();
         uploadForm.append("file", file);
-
+        uploadForm.append("folder", "avatar");
         const uploadRes = await axios.post("/api/upload", uploadForm, {
           headers: { "Content-Type": "multipart/form-data" },
         });

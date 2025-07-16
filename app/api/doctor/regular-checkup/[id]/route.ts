@@ -4,7 +4,8 @@ import PatientsProfile from "@/models/PatientsProfile";
 import RegularCheckup from "@/models/RegularCheckup";
 import MedicalHistory from "@/models/MedicalHistory";
 import Vitals from "@/models/Vitals";
-import ServiceUsage from "@/models/ServiceUsage";
+import  "@/models/ServiceUsage";
+import "@/models/DoctorAppointmentRequest";
 // on profile page will see medical history, give prescription, after appointment they will do done--> in regular check update true
 // also putting the treatment services
 // id is user._id

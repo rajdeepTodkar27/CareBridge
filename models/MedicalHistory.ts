@@ -9,13 +9,17 @@ export interface IMedHistory extends Document {
   currentMedications: string;
   allergies: string;
   geneticDisorders: string;
-  pastMedicalTests: Types.Array<string>;
+  pastMedicalTests: MedicalTest[];
   pastPrescriptions: Types.Array<Types.ObjectId>;
 }
 interface Surgery {
     nameOfSurgery: string;
     dateOfSurgery: string;
     reportFile: string
+}
+interface MedicalTest{
+  nameOfTest: string;
+  testfile: string;
 }
 
 const medicalhistoryschema = new Schema<IMedHistory>({
@@ -27,7 +31,7 @@ const medicalhistoryschema = new Schema<IMedHistory>({
   currentMedications:  {type: String, default: ""},
   allergies:  {type: String, default: ""},
   geneticDisorders:  {type: String, default: ""},
-  pastMedicalTests: [String],
+  pastMedicalTests: [{nameOfTest:{type: String,default: ""},testfile: {type: String,default: ""}}],
   pastPrescriptions: [{type: mongoose.Schema.ObjectId, ref: 'Prescription'}]
 })
 

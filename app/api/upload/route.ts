@@ -4,10 +4,13 @@ import cloudinary from '@/libs/cloudinary';
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get('file') as File;
+  const folder = formData.get("folder") as string;
 
   if (!file) {
     return NextResponse.json({ error: 'No file provided' }, { status: 400 });
   }
+
+  
 
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
@@ -15,7 +18,11 @@ export async function POST(req: NextRequest) {
   try {
     const uploadResult = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
-        { folder: 'avatars' },
+        { folder: folder,
+           resource_type: "auto", // 👈 IMPORTANT: allows PDF, video, images, etc.
+          use_filename: true,
+          unique_filename: true,
+         },
         (error, result) => {
           if (error) return reject(error);
           resolve(result);
