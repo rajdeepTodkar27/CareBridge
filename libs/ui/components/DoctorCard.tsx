@@ -11,7 +11,7 @@ type Doctor = {
   licenseNo: string;
   licenseAuthority: string;
   administrativeTitle?: string;
-  avatarUrl?: string; 
+  avtarImg?: string; 
 };
 
 type DoctorCardProps = {
@@ -28,9 +28,9 @@ export default function DoctorCard({ doc }: DoctorCardProps) {
         className="cursor-pointer p-4 rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition bg-white flex items-center gap-4"
       >
         {/* Avatar */}
-        {doc.avatarUrl ? (
+        {doc.avtarImg ? (
           <img
-            src={doc.avatarUrl}
+            src={doc.avtarImg}
             alt={doc.fullName}
             className="w-12 h-12 rounded-full object-cover border"
           />

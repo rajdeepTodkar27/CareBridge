@@ -2,10 +2,11 @@ import { NextRequest,NextResponse } from "next/server";
 import { connect } from "@/dbconfig/dbconfig";
 import MedicalHistory from "@/models/MedicalHistory";
 import "@/models/Prescription";
-import { error } from "console";
+
 export async function GET(req: NextRequest,{ params }: { params: { id: string } }) {
+    await connect
+    
     try {
-        await connect;
         const {id} = await params;
         const medicalHistory = await MedicalHistory.findOne({ patient: id })
       .populate("pastPrescriptions");

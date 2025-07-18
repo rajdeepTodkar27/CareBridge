@@ -42,81 +42,12 @@ interface MedicalHistory {
 
 export default function MedicalHistoryPage() {
   const { id } = useParams();
-  const router = useRouter()
   const [data, setData] = useState<MedicalHistory | null>(null);
   const [medicalTests, setMedicalTests] = useState<MedicalTest[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [testName, setTestName] = useState("");
-  const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
-  const [showModal, setShowModal] = useState(false);
 
-  const [newSurgery, setNewSurgery] = useState<Surgery & { file?: File | null }>({
-    nameOfSurgery: "",
-    dateOfSurgery: "",
-    reportFile: "",
-    file: null,
-  });
 
-  const handleAddSurgery = async () => {
-    if (!newSurgery.nameOfSurgery || !newSurgery.dateOfSurgery || !newSurgery.file) {
-      return alert("Please fill all fields.");
-    }
-
-    try {
-      const formData = new FormData();
-      formData.append("file", newSurgery.file);
-      formData.append("folder", "surgeryReports");
-
-      const uploadRes = await axios.post("/api/upload", formData);
-      const uploadedUrl = uploadRes.data.secure_url;
-
-      const newSurg = {
-        nameOfSurgery: newSurgery.nameOfSurgery,
-        dateOfSurgery: newSurgery.dateOfSurgery,
-        reportFile: uploadedUrl,
-      };
-
-      const updatedSurgeries = [...(data?.surgeries || []), newSurg];
-
-      await axios.post("/api/doctor/medical-history/surgeries", {
-        patientId: id,
-        ...newSurg,
-      });
-
-      setData((prev) => (prev ? { ...prev, surgeries: updatedSurgeries } : null));
-
-      setNewSurgery({ nameOfSurgery: "", dateOfSurgery: "", reportFile: "", file: null });
-      (document.getElementById("surgery-input") as HTMLInputElement).value = "";
-    } catch (err) {
-      console.error("Failed to add surgery:", err);
-      alert("Error uploading surgery. Please try again.");
-    }
-  };
-
-  const handleDeleteSurgery = async (index: number) => {
-    if (!data) return;
-    const confirmDelete = confirm("Are you sure you want to delete this surgery?");
-    if (!confirmDelete) return;
-
-    const surgeryToDelete = data.surgeries[index];
-    try {
-      const publicId = extractPublicId(surgeryToDelete.reportFile);
-      await axios.post("/api/cloudinary/delete", { publicId });
-
-      const updatedSurgeryList = [...data.surgeries];
-      updatedSurgeryList.splice(index, 1);
-
-      await axios.patch("/api/doctor/medical-history/surgeries", {
-        patientId: id,
-        surgeryToRemove: surgeryToDelete,
-      });
-
-      setData({ ...data, surgeries: updatedSurgeryList });
-    } catch (error) {
-      console.error("Delete surgery failed:", error);
-      alert("Failed to delete surgery. Please try again.");
-    }
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -221,15 +152,6 @@ export default function MedicalHistoryPage() {
             <div className="p-4 grid grid-cols-1 md:grid-cols-[20%_1fr] gap-x-6">
               {data.currentMedications.split(",").map((med, i) => renderRow(med.trim(), ""))}
             </div>
-            {/* Surgeries */}
-            <h2 className="text-[#121516] text-xl sm:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Surgeries</h2>
-            <SurgerySection
-              surgeries={data.surgeries}
-              newSurgery={newSurgery}
-              setNewSurgery={setNewSurgery}
-              handleAddSurgery={handleAddSurgery}
-              handleDeleteSurgery={handleDeleteSurgery}
-            />
             {/* Allergies */}
             <h2 className="text-[#121516] text-xl sm:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Allergies</h2>
             <div className="p-4 grid grid-cols-1 md:grid-cols-[20%_1fr] gap-x-6">
@@ -251,71 +173,10 @@ export default function MedicalHistoryPage() {
               medicalTests={medicalTests}
               handleDelete={handleDelete}
             />
-
-            {/* Prescriptions */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 pt-5 pb-3 gap-3 mt-8">
-              <h2 className="text-[#121516] text-xl sm:text-[22px] font-bold tracking-[-0.015em]">
-                Past Prescriptions
-              </h2>
-
-              <button
-                onClick={() => router.push(`/doctor/prescription/${id}`)}
-                className="inline-flex items-center justify-center rounded-md bg-green-500 px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-green-700 w-full sm:w-auto"
-              >
-                 Add Prescription
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 px-4 pb-4">
-              {[...data.pastPrescriptions]
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .map((prescription, index) => (
-                  <div
-                    key={index}
-                    onClick={() => {
-                      setSelectedPrescription(prescription);
-                      setShowModal(true);
-                    }}
-                    className="cursor-pointer border border-gray-200 shadow-sm rounded-xl p-4 hover:shadow-md transition"
-                  >
-                    <h3 className="text-base font-semibold text-green-700 mb-1">
-                      Prescription {index + 1}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Date: {new Date(prescription.date).toLocaleDateString()}
-                    </p>
-                  </div>
-                ))}
-            </div>
-
-            {showModal && selectedPrescription && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-8">
-                <div className="relative bg-white w-full max-w-3xl max-h-[90vh] rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95">
-
-                  {/* Close Button */}
-                  <button
-                    onClick={() => setShowModal(false)}
-                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-xl"
-                    aria-label="Close"
-                  >
-                    ✖
-                  </button>
-
-                  {/* Modal Content */}
-                  <div className="p-6 overflow-y-auto max-h-[80vh]">
-                    <h3 className="text-xl font-semibold mb-4 text-gray-800">
-                      Prescription Details
-                    </h3>
-                    <PrescriptionTable prescriptions={[selectedPrescription]} />
-                  </div>
-                </div>
-              </div>
-            )}
-
-
+           
           </div>
         </div>
       </div>
     </div >
   );
-}
+} 

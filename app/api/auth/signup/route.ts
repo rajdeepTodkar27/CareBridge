@@ -6,7 +6,7 @@ import User from '@/models/User';
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, password } = await req.json();
+    const { email, password } = await req.json();
 
     await connect();
 

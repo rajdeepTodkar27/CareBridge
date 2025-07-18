@@ -11,7 +11,7 @@ export interface IMedRoutine extends Document {
 interface Medicine {
   medicineName: string;
   dosage: string;
-  time: string;
+  time: string[];
   mealRelation: 'before_meal' | 'after_meal';
   isTaken: Boolean
 }
@@ -20,7 +20,7 @@ const medroutineschema = new Schema<IMedRoutine>({
   patient: { type: mongoose.Schema.ObjectId, ref: 'User', required: true },
   Medication: [{
     medicineName: { type: String, required: true },
-    dosage: { type: String, required: true }, time: { type: String, required: true }, mealRelation: { type: String, enum: ['before_meal', 'after_meal'], isTaken: { type: Boolean, default: false } }
+    dosage: { type: String, required: true }, time: [{ type: String, required: true }], mealRelation: { type: String, enum: ['before meal', 'after meal'], isTaken: { type: Boolean, default: false } }
   }],
   startingDate: { type: String, required: true },
   endingDate: { type: String, required: true },

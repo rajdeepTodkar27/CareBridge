@@ -25,9 +25,9 @@ const HomePage = () => {
               icon="event"
             />
             <HomeCard
-              title="Active Admission"
-              subtitle="View your current hospital admissions"
-              navRoute="/patient/active-admission"
+              title="Admission"
+              subtitle="View your hospital admissions details"
+              navRoute="/patient/admission"
               icon="bed"
             />
             <HomeCard

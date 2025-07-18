@@ -9,7 +9,7 @@ type Nurse = {
   qualification: string;
   institute: string;
   administrativeTitle?: string;
-  avatarUrl?: string; // Optional image support
+  avtarImg?: string; // Optional image support
 };
 
 type StaffCardProps = {
@@ -26,9 +26,9 @@ export default function StaffCard({ nurse }: StaffCardProps) {
         className="cursor-pointer p-4 rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition bg-white flex items-center gap-4"
       >
         {/* Avatar */}
-        {nurse.avatarUrl ? (
+        {nurse.avtarImg ? (
           <img
-            src={nurse.avatarUrl}
+            src={nurse.avtarImg}
             alt={nurse.fullName}
             className="w-12 h-12 rounded-full object-cover border"
           />

@@ -49,7 +49,6 @@ export async function GET() {
         if(!profile){
             return NextResponse.json({error: "profile not found"},{status: 404})
         }
-        const docAppointment = await DoctorAppointmentRequest.find({patient: profile._id, requestStatus: {$in: ["rejected","pending"]} })
         const regularCheckups = await RegularCheckup.find()
         .populate({path: "appointmentRequest" ,match: {patient: profile._id},populate: {path:"doctor", select: "fullName empId"}, select: "-patient -requestStatus -subscription"})
         .populate({path: "treatmentServices", populate: {path: "service",select: "-isActive"}})
@@ -58,7 +57,6 @@ export async function GET() {
         return NextResponse.json({
             message: "data fetched successfully",
             data: {
-                appReq: docAppointment,
                 regularCheckups: filteredCheckups
             }
         },{status: 201})

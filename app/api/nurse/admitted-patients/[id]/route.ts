@@ -9,7 +9,7 @@ import Vitals from "@/models/Vitals";
 // nurse can change vitals
 // here should think and update the code for adding medication routine
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(req: NextRequest,{ params }: { params: { id: string } }) {
   try {
     await connect();
 
